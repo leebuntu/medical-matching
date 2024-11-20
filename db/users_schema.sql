@@ -58,7 +58,7 @@ CREATE TABLE review_photo
 CREATE TABLE user
 (
   id              INTEGER      NULL    ,
-  email_address   VARCHAR(255) NOT NULL,
+  email           VARCHAR(255) NOT NULL,
   hashed_password VARCHAR(255) NOT NULL,
   PRIMARY KEY (id AUTOINCREMENT)
 );
@@ -72,8 +72,10 @@ CREATE TABLE user_profile
   home_address      VARCHAR(255) NOT NULL,
   postal_code       VARCHAR(6)   NOT NULL,
   candy             INT          NOT NULL DEFAULT 0,
-  priority_id       INTEGER      NOT NULL DEFAULT 0,
+  payment_id        INTEGER      NULL    ,
+  priority_id       INTEGER      NOT NULL DEFAULT 1,
   PRIMARY KEY (id AUTOINCREMENT),
   FOREIGN KEY (priority_id) REFERENCES priority_set (id),
-  FOREIGN KEY (id) REFERENCES user (id)
+  FOREIGN KEY (id) REFERENCES user (id),
+  FOREIGN KEY (payment_id) REFERENCES payment_method (id)
 );

@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"MedicalMatching/routers/auth"
-	"MedicalMatching/routers/user"
+	"MedicalMatching/middlewares"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,17 +12,25 @@ func SetupRoutes(router *gin.Engine) {
 	{
 		authGroup := v1.Group("/auth")
 		{
-			authGroup.POST("/login", auth.LoginHandler())
-			authGroup.POST("/register", auth.RegisterHandler())
+			authGroup.POST("/login", LoginHandler())
+			authGroup.POST("/register", RegisterHandler())
 			//auth.POST("/logout", LogoutHandler)
 		}
 
 		userGroup := v1.Group("/users")
 		{
-			userGroup.Use(auth.AuthMiddleware())
-			userGroup.GET("/me", user.GetUserProfile())
-			userGroup.PUT("/me", user.UpdateUserProfile())
-			userGroup.DELETE("/me", user.DeleteUserProfile())
+			userGroup.Use(middlewares.AuthMiddleware())
+			userGroup.GET("/me", GetUserProfile())
+			userGroup.PUT("/me", UpdateUserProfile())
+			//userGroup.DELETE("/me", user.DeleteUserProfile())
+		}
+
+		paymentGroup := userGroup.Group("/payment-methods")
+		{
+			paymentGroup.Use(middlewares.AuthMiddleware())
+			paymentGroup.POST("/", AddPaymentMethod())
+			paymentGroup.GET("/", GetPaymentMethodList())
+			paymentGroup.DELETE("/", DeletePaymentMethod())
 		}
 
 	}
