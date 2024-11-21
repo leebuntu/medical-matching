@@ -1,4 +1,4 @@
-module MedicalMatching
+module medical-matching
 
 go 1.23
 

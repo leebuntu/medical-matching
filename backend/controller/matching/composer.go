@@ -1,8 +1,8 @@
 package matching
 
 import (
-	"MedicalMatching/constants/dto"
-	"MedicalMatching/constants/objects"
+	"medical-matching/constants/dto"
+	"medical-matching/constants/objects"
 )
 
 type Composer struct {

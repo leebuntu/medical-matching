@@ -1,8 +1,8 @@
 package sets
 
 import (
-	"MedicalMatching/constants/objects"
 	"database/sql"
+	"medical-matching/constants/objects"
 )
 
 type SymptomInjection struct {

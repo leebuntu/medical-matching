@@ -1,8 +1,8 @@
 package db
 
 import (
-	"MedicalMatching/constants"
 	"database/sql"
+	"medical-matching/constants"
 	"sync"
 
 	"github.com/mattn/go-sqlite3"

@@ -1,8 +1,8 @@
 package user
 
 import (
-	"MedicalMatching/constants/dto"
 	"database/sql"
+	"medical-matching/constants/dto"
 
 	"github.com/google/uuid"
 )

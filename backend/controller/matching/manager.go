@@ -1,8 +1,8 @@
 package matching
 
 import (
-	"MedicalMatching/constants/dto"
 	"errors"
+	"medical-matching/constants/dto"
 	"sync"
 )
 

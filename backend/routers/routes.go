@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"MedicalMatching/middlewares"
+	"medical-matching/middlewares"
 
 	"github.com/gin-gonic/gin"
 )

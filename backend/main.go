@@ -1,10 +1,10 @@
 package main
 
 import (
-	"MedicalMatching/controller/hospital"
-	"MedicalMatching/db"
-	"MedicalMatching/routers"
 	"log"
+	"medical-matching/controller/hospital"
+	"medical-matching/db"
+	"medical-matching/routers"
 
 	"github.com/gin-gonic/gin"
 )

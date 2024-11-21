@@ -1,10 +1,10 @@
 package routers
 
 import (
-	"MedicalMatching/constants"
-	"MedicalMatching/constants/dto"
-	"MedicalMatching/db/auth"
-	"MedicalMatching/middlewares"
+	"medical-matching/constants"
+	"medical-matching/constants/dto"
+	"medical-matching/db/auth"
+	"medical-matching/middlewares"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

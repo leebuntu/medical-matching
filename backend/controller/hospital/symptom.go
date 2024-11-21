@@ -1,9 +1,9 @@
 package hospital
 
 import (
-	"MedicalMatching/constants"
-	"MedicalMatching/db"
 	"database/sql"
+	"medical-matching/constants"
+	"medical-matching/db"
 )
 
 type Symptom struct {

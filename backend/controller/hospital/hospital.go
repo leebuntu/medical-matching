@@ -1,11 +1,11 @@
 package hospital
 
 import (
-	"MedicalMatching/constants"
-	"MedicalMatching/constants/objects"
-	"MedicalMatching/controller/matching"
-	"MedicalMatching/db"
 	"database/sql"
+	"medical-matching/constants"
+	"medical-matching/constants/objects"
+	"medical-matching/controller/matching"
+	"medical-matching/db"
 	"sync"
 )
 

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"MedicalMatching/constants/dto"
+	"medical-matching/constants/dto"
 
 	"golang.org/x/crypto/bcrypt"
 )

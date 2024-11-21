@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"MedicalMatching/constants"
+	"medical-matching/constants"
 
 	"net/http"
 	"strings"

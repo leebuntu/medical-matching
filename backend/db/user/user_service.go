@@ -1,10 +1,10 @@
 package user
 
 import (
-	"MedicalMatching/constants/dto"
-	"MedicalMatching/utils"
 	"database/sql"
 	"fmt"
+	"medical-matching/constants/dto"
+	"medical-matching/utils"
 )
 
 type UserService struct {
