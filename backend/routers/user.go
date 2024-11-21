@@ -95,12 +95,7 @@ func GetPaymentMethodList() gin.HandlerFunc {
 func DeletePaymentMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt("userID")
-
-		var card dto.DeletePaymentMethod
-		if err := c.ShouldBindJSON(&card); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
-			return
-		}
+		cardID := c.Param("cardID")
 
 		db, err := db.GetDBManager().GetDB(constants.UserDB)
 		if err != nil {
@@ -109,7 +104,7 @@ func DeletePaymentMethod() gin.HandlerFunc {
 		}
 
 		paymentService := user.NewPaymentService(db)
-		err = paymentService.DeletePaymentMethod(userID, card.CardID)
+		err = paymentService.DeletePaymentMethod(userID, cardID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return

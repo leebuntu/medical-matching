@@ -32,10 +32,6 @@ type RetrievePaymentMethod struct {
 	ExpDate    string `json:"exp_date"`
 }
 
-type DeletePaymentMethod struct {
-	CardID string `json:"card_id"`
-}
-
 type PaymentMethodList struct {
 	PaymentMethods []RetrievePaymentMethod `json:"payment_methods"`
 }

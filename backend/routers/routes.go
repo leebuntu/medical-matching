@@ -22,16 +22,27 @@ func SetupRoutes(router *gin.Engine) {
 			userGroup.Use(middlewares.AuthMiddleware())
 			userGroup.GET("/me", GetUserProfile())
 			userGroup.PUT("/me", UpdateUserProfile())
-			//userGroup.DELETE("/me", user.DeleteUserProfile())
 		}
 
-		paymentGroup := userGroup.Group("/payment-methods")
+		paymentGroup := v1.Group("/payment-methods")
 		{
 			paymentGroup.Use(middlewares.AuthMiddleware())
 			paymentGroup.POST("/", AddPaymentMethod())
 			paymentGroup.GET("/", GetPaymentMethodList())
-			paymentGroup.DELETE("/", DeletePaymentMethod())
+			paymentGroup.DELETE("/:cardID", DeletePaymentMethod())
 		}
 
+		hospitalGroup := v1.Group("/hospitals")
+		{
+			hospitalGroup.Use(middlewares.AuthMiddleware())
+			hospitalGroup.GET("/", GetHospitalList())
+		}
+
+		matchingGroup := v1.Group("/matchings")
+		{
+			matchingGroup.Use(middlewares.AuthMiddleware())
+			matchingGroup.POST("/", CreateMatching())
+			matchingGroup.GET("/:matchingID", GetMatching())
+		}
 	}
 }
