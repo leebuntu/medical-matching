@@ -15,10 +15,9 @@ type DBManager struct {
 	databases map[string]*sql.DB
 }
 
-func InitDB() {
-	GetDBManager()
+func (m *DBManager) InitDB() {
 	for key, value := range constants.DatabaseNames {
-		instance.addDB(key, value)
+		m.addDB(key, value)
 	}
 }
 
@@ -50,8 +49,8 @@ func (manager *DBManager) GetDB(name string) (*sql.DB, error) {
 	return db, nil
 }
 
-func CloseAll() {
-	for _, db := range instance.databases {
+func (m *DBManager) CloseAll() {
+	for _, db := range m.databases {
 		db.Close()
 	}
 }

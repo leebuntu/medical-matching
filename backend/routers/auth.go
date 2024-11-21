@@ -3,7 +3,6 @@ package routers
 import (
 	"MedicalMatching/constants"
 	"MedicalMatching/constants/dto"
-	"MedicalMatching/db"
 	"MedicalMatching/db/auth"
 	"MedicalMatching/middlewares"
 	"net/http"
@@ -15,18 +14,8 @@ func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginRequest dto.LoginRequest
 
-		if err := c.ShouldBindJSON(&loginRequest); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": constants.BadRequest,
-			})
-			return
-		}
-
-		db, err := db.GetDBManager().GetDB(constants.UserDB)
+		db, _, err := initRouteHandler(c, &loginRequest, constants.UserDB)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": constants.InternalServerError,
-			})
 			return
 		}
 
@@ -58,18 +47,8 @@ func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var registerRequest dto.RegisterRequest
 
-		if err := c.ShouldBindJSON(&registerRequest); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": constants.BadRequest,
-			})
-			return
-		}
-
-		db, err := db.GetDBManager().GetDB(constants.UserDB)
+		db, _, err := initRouteHandler(c, &registerRequest, constants.UserDB)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": constants.InternalServerError,
-			})
 			return
 		}
 

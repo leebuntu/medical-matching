@@ -1,9 +1,8 @@
 package main
 
 import (
-	"MedicalMatching/constants"
+	"MedicalMatching/controller/hospital"
 	"MedicalMatching/db"
-	"MedicalMatching/db/user"
 	"MedicalMatching/routers"
 	"log"
 
@@ -15,17 +14,19 @@ func main() {
 
 	routers.SetupRoutes(r)
 
-	db.InitDB()
-	userDB, err := db.GetDBManager().GetDB(constants.UserDB)
+	dbManager := db.GetDBManager()
+	dbManager.InitDB()
+
+	err := hospital.GetHospitalManager().InitHospitalManager()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
-	err = user.NewPriorityInjection(userDB).InjectPriority(5, 26)
+	err = hospital.GetSymptomManager().InitSymptomManager()
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 
-	defer db.CloseAll()
+	defer dbManager.CloseAll()
 
 	r.Run(":8080")
 }

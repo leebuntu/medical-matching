@@ -3,7 +3,7 @@ CREATE TABLE medical_record
 (
   id          INTEGER       NULL    ,
   user_id     INTEGER       NOT NULL,
-  hospital_id INT           NOT NULL,
+  hospital_id INTEGER       NOT NULL,
   timestamp   TIMESTAMP     NOT NULL,
   doctor_name VARCHAR(20)   NOT NULL,
   notes       VARCHAR(1200) NULL    ,
@@ -14,45 +14,24 @@ CREATE TABLE medical_record
 
 CREATE TABLE payment_method
 (
-  id               INTEGER     NULL    ,
+  id               TEXT        NOT NULL,
   user_id          INTEGER     NOT NULL,
   card_holder_name VARCHAR(30) NOT NULL,
   card_number      VARCHAR(19) NOT NULL,
   exp_date         VARCHAR(5)  NOT NULL,
   cvv              VARCHAR(4)  NOT NULL,
-  PRIMARY KEY (id AUTOINCREMENT),
+  PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
-CREATE TABLE priority_set
+CREATE TABLE priority
 (
-  id         INTEGER NULL    ,
-  priority_1 INT     NULL    ,
-  priority_2 INT     NULL    ,
-  priority_3 INT     NULL    ,
-  priority_4 INT     NULL    ,
-  priority_5 INT     NULL    ,
-  PRIMARY KEY (id AUTOINCREMENT)
-);
-
-CREATE TABLE review
-(
-  id           INTEGER      NULL    ,
-  user_id      INTEGER      NOT NULL,
-  timestamp    TIMESTAMP    NOT NULL,
-  score        INT          NOT NULL,
-  text_content VARCHAR(600) NULL    ,
+  id          INTEGER NULL    ,
+  user_id     INTEGER NOT NULL,
+  priority_id INT     NOT NULL,
+  rank        INT     NOT NULL,
   PRIMARY KEY (id AUTOINCREMENT),
   FOREIGN KEY (user_id) REFERENCES user (id)
-);
-
-CREATE TABLE review_photo
-(
-  id        INTEGER      NULL    ,
-  review_id INTEGER      NOT NULL,
-  photo_url VARCHAR(255) NOT NULL,
-  PRIMARY KEY (id AUTOINCREMENT),
-  FOREIGN KEY (review_id) REFERENCES review (id)
 );
 
 CREATE TABLE user
@@ -72,10 +51,8 @@ CREATE TABLE user_profile
   home_address      VARCHAR(255) NOT NULL,
   postal_code       VARCHAR(6)   NOT NULL,
   candy             INT          NOT NULL DEFAULT 0,
-  payment_id        INTEGER      NULL    ,
-  priority_id       INTEGER      NOT NULL DEFAULT 1,
+  card_id           TEXT         NULL    ,
   PRIMARY KEY (id AUTOINCREMENT),
-  FOREIGN KEY (priority_id) REFERENCES priority_set (id),
   FOREIGN KEY (id) REFERENCES user (id),
-  FOREIGN KEY (payment_id) REFERENCES payment_method (id)
+  FOREIGN KEY (card_id) REFERENCES payment_method (id)
 );

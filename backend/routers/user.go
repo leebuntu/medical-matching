@@ -12,11 +12,8 @@ import (
 
 func GetUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.GetInt("userID")
-
-		db, err := db.GetDBManager().GetDB(constants.UserDB)
+		db, userID, err := initRouteHandler(c, nil, constants.UserDB)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
 		}
 
@@ -34,17 +31,10 @@ func GetUserProfile() gin.HandlerFunc {
 
 func UpdateUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID := c.GetInt("userID")
+		profile := dto.UserProfileUpdate{}
 
-		var profile dto.UserProfileUpdate
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
-			return
-		}
-
-		db, err := db.GetDBManager().GetDB(constants.UserDB)
+		db, userID, err := initRouteHandler(c, &profile, constants.UserDB)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
 		}
 
@@ -69,15 +59,62 @@ func DeleteUser() gin.HandlerFunc {
 
 func AddPaymentMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var card dto.PaymentMethod
+
+		db, userID, err := initRouteHandler(c, &card, constants.UserDB)
+
+		paymentService := user.NewPaymentService(db)
+		err = paymentService.AddPaymentMethod(userID, card)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": constants.AddPaymentMethodSuccess})
 	}
 }
 
 func GetPaymentMethodList() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		db, userID, err := initRouteHandler(c, nil, constants.UserDB)
+		if err != nil {
+			return
+		}
+
+		paymentService := user.NewPaymentService(db)
+		paymentMethods, err := paymentService.GetPaymentMethodList(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+
+		c.JSON(http.StatusOK, paymentMethods)
 	}
 }
 
 func DeletePaymentMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userID := c.GetInt("userID")
+
+		var card dto.DeletePaymentMethod
+		if err := c.ShouldBindJSON(&card); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
+			return
+		}
+
+		db, err := db.GetDBManager().GetDB(constants.UserDB)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+
+		paymentService := user.NewPaymentService(db)
+		err = paymentService.DeletePaymentMethod(userID, card.CardID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": constants.DeletePaymentMethodSuccess})
 	}
 }

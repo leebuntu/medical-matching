@@ -1,4 +1,4 @@
-package user
+package sets
 
 import (
 	"database/sql"
