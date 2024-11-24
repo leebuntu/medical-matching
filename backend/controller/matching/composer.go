@@ -1,7 +1,7 @@
 package matching
 
 import (
-	"medical-matching/constants/dto"
+	"medical-matching/constants"
 	"medical-matching/constants/objects"
 )
 
@@ -31,12 +31,12 @@ func (c *Composer) init() {
 	}
 
 	c.weights = make(map[int]float64)
-	c.weights = dto.Weights
-	for i := len(c.weights) + 1; i <= dto.TotalPriority; i++ {
+	c.weights = constants.Weights
+	for i := len(c.weights) + 1; i <= constants.TotalPriority; i++ {
 		c.weights[i] = 1.0
 	}
 
-	c.orders = make([]int, dto.TotalPriority)
+	c.orders = make([]int, constants.TotalPriority)
 	copy(c.orders, c.priority)
 
 	exists := make(map[int]bool)
@@ -45,7 +45,7 @@ func (c *Composer) init() {
 	}
 
 	index := len(c.priority)
-	for i := 1; i <= dto.TotalPriority; i++ {
+	for i := 1; i <= constants.TotalPriority; i++ {
 		if !exists[i] {
 			c.orders[index] = i
 			index++
@@ -54,7 +54,7 @@ func (c *Composer) init() {
 }
 
 func (c *Composer) calculateWaiting(hospital *objects.Hospital, weight float64) (float64, error) {
-	return float64((100 - (hospital.WaitingPerson * dto.PerWatingPersonScore))) * weight, nil
+	return float64((100 - (hospital.WaitingPerson * constants.PerWatingPersonScore))) * weight, nil
 }
 
 func (c *Composer) calculateDistance(hospital *objects.Hospital, weight float64) (float64, error) {
@@ -69,7 +69,7 @@ func (c *Composer) calculateReview(hospital *objects.Hospital, weight float64) (
 
 func (c *Composer) calculateHaveParkingLot(hospital *objects.Hospital, weight float64) (float64, error) {
 	if hospital.Facility.HaveParkingLot {
-		return dto.HaveParkingLotScore * weight, nil
+		return constants.HaveParkingLotScore * weight, nil
 	}
 	return 0, nil
 }

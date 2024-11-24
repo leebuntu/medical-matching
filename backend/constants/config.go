@@ -24,4 +24,36 @@ const (
 	UpdateProfileSuccess       = "프로필 업데이트 완료"
 	AddPaymentMethodSuccess    = "결제 수단 추가 완료"
 	DeletePaymentMethodSuccess = "결제 수단 삭제 완료"
+	NotFound                   = "찾을 수 없는 리소스"
+)
+
+const (
+	Waiting = iota + 1
+	Distance
+	Review
+	HaveParkingLot
+	LeastWalk
+)
+
+var Weights = map[int]float64{
+	1: 3.0,
+	2: 2.0,
+	3: 1.5,
+}
+
+const (
+	TotalPriority = 5
+)
+
+const (
+	PerWatingPersonScore = -5
+	HaveParkingLotScore  = 30
+	PerWalkMinuteScore   = -5
+)
+
+const (
+	BeforeMatching = iota
+	StartMatching
+	Reserved
+	MatchingCompleted
 )

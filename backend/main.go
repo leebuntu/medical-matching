@@ -9,6 +9,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func initManager() error {
+	err := hospital.GetHospitalManager().InitHospitalManager()
+	if err != nil {
+		return err
+	}
+	err = hospital.GetSymptomManager().InitSymptomManager()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
 	r := gin.Default()
 
@@ -17,11 +29,7 @@ func main() {
 	dbManager := db.GetDBManager()
 	dbManager.InitDB()
 
-	err := hospital.GetHospitalManager().InitHospitalManager()
-	if err != nil {
-		log.Panic(err)
-	}
-	err = hospital.GetSymptomManager().InitSymptomManager()
+	err := initManager()
 	if err != nil {
 		log.Panic(err)
 	}

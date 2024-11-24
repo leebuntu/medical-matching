@@ -2,7 +2,7 @@ package sets
 
 import (
 	"database/sql"
-	"medical-matching/constants/objects"
+	"medical-matching/controller/hospital"
 )
 
 type SymptomInjection struct {
@@ -13,6 +13,6 @@ func NewSymptomInjection(db *sql.DB) *SymptomInjection {
 	return &SymptomInjection{db: db}
 }
 
-func (s *SymptomInjection) InjectSymptoms(hospitalID int, symptoms []objects.Symptom) error {
+func (s *SymptomInjection) InjectSymptoms(hospitalID int, symptoms []hospital.Symptom) error {
 
 }

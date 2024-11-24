@@ -28,10 +28,18 @@ func (m *MatchingManager) alreadyMatched(userID int) bool {
 	return ok
 }
 
-func (m *MatchingManager) CreateMatching(userID int, context dto.MatchingRequest) error {
+func (m *MatchingManager) GetMatching(userID int, matchingID string) (*Matching, error) {
+	matching, ok := m.matchings[userID]
+	if !ok {
+		return nil, errors.New("matching not found")
+	}
+	return matching, nil
+}
+
+func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) error {
 	matching := &Matching{
 		userID:  userID,
-		context: &context,
+		context: context,
 	}
 
 	if m.alreadyMatched(userID) {

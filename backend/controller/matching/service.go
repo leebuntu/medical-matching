@@ -18,7 +18,7 @@ func NewMatching(userID int, context *dto.MatchingRequest) *Matching {
 	return &Matching{
 		userID:  userID,
 		context: context,
-		state:   dto.BeforeMatching,
+		state:   constants.BeforeMatching,
 	}
 }
 
@@ -43,7 +43,7 @@ func (m *Matching) getPriority() error {
 }
 
 func (m *Matching) StartMatching() error { // implement only find hospital
-	m.state = dto.StartMatching
+	m.state = constants.StartMatching
 
 	if err := m.getPriority(); err != nil {
 		return err

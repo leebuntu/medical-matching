@@ -4,6 +4,13 @@ import "github.com/gin-gonic/gin"
 
 func GetHospitalList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userID := ctx.GetInt("userID")
+		// TODO: get hospital list
+	}
+}
+
+func GetHospitalDetail() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		hospitalID := ctx.Param("hospitalID")
+		// TODO: get hospital detail
 	}
 }
