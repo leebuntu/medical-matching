@@ -10,7 +10,7 @@ func GetHospitalList() gin.HandlerFunc {
 
 func GetHospitalDetail() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		hospitalID := ctx.Param("hospitalID")
+		//hospitalID := ctx.Param("hospitalID")
 		// TODO: get hospital detail
 	}
 }

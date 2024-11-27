@@ -57,5 +57,6 @@ func (m *HospitalManager) InitHospitalManager() error {
 	return nil
 }
 
-func (m *HospitalManager) FilteringHospital(composer matching.Composer) []*objects.Hospital {
+func (m *HospitalManager) FilteringHospital(composer matching.Composer) *objects.Hospital {
+	return nil
 }

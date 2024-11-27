@@ -7,7 +7,7 @@ import (
 )
 
 type MatchingManager struct {
-	matchings map[int]*Matching
+	matchings map[string]*Matching
 }
 
 var once sync.Once
@@ -16,41 +16,30 @@ var instance *MatchingManager
 func GetMatchingManager() *MatchingManager {
 	once.Do(func() {
 		instance = &MatchingManager{
-			matchings: make(map[int]*Matching),
+			matchings: make(map[string]*Matching),
 		}
 	})
 
 	return instance
 }
 
-func (m *MatchingManager) alreadyMatched(userID int) bool {
-	_, ok := m.matchings[userID]
-	return ok
-}
-
-func (m *MatchingManager) GetMatching(userID int, matchingID string) (*Matching, error) {
-	matching, ok := m.matchings[userID]
+func (m *MatchingManager) GetMatching(matchingID string) (*Matching, error) {
+	matching, ok := m.matchings[matchingID]
 	if !ok {
 		return nil, errors.New("matching not found")
 	}
 	return matching, nil
 }
 
-func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) error {
+func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) (*Matching, error) {
+	// TODO: check limit
+
 	matching := &Matching{
 		userID:  userID,
 		context: context,
 	}
 
-	if m.alreadyMatched(userID) {
-		return errors.New("already matched")
-	}
+	m.matchings[matching.matchingID] = matching
 
-	m.matchings[userID] = matching
-
-	return nil
-}
-
-func (m *MatchingManager) StartMatching(userID int) error {
-	return m.matchings[userID].StartMatching()
+	return matching, nil
 }

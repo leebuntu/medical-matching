@@ -54,6 +54,7 @@ const (
 const (
 	BeforeMatching = iota
 	StartMatching
-	Reserved
+	WhileMatching
 	MatchingCompleted
+	MatchingFailed
 )

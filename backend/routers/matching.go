@@ -19,19 +19,25 @@ func CreateMatching() gin.HandlerFunc {
 			return
 		}
 
-		m := matching.GetMatchingManager()
-		m.CreateMatching(userID, &rq)
-		m.StartMatching(userID)
+		mm := matching.GetMatchingManager()
+		m, err := mm.CreateMatching(userID, &rq)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
+			return
+		}
+
+		go m.StartMatching()
+
+		ctx.JSON(http.StatusOK, gin.H{"matching_id": m.GetMatchingID()})
 	}
 }
 
 func GetMatching() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userID := ctx.GetInt("userID")
 		matchingID := ctx.Param("matchingID")
 
 		m := matching.GetMatchingManager()
-		matching, err := m.GetMatching(userID, matchingID)
+		matching, err := m.GetMatching(matchingID)
 		if err != nil {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": constants.NotFound})
 			return

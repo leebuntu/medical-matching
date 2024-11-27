@@ -1,10 +1,12 @@
 package middlewares
 
 import (
+	"os"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
-const secretKey string = "secret"
+var secretKey string = os.Getenv("JWT_SECRET")
 
 type JWTClaims struct {
 	UserID int `json:"user_id"`

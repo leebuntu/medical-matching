@@ -1,13 +1,12 @@
 
 CREATE TABLE hospital
 (
-  id                   INTEGER       NULL    ,
-  name                 VARCHAR(255)  NOT NULL,
-  owner_name           VARCHAR(255)  NOT NULL,
-  address              VARCHAR(255)  NOT NULL,
-  postal_code          VARCHAR(6)    NOT NULL,
-  contact_phone_number VARCHAR(13)   NULL    ,
-  symptoms             VARCHAR(1200) NOT NULL,
+  id                   INTEGER      NULL    ,
+  name                 VARCHAR(255) NOT NULL,
+  owner_name           VARCHAR(255) NOT NULL,
+  address              VARCHAR(255) NOT NULL,
+  postal_code          VARCHAR(6)   NOT NULL,
+  contact_phone_number VARCHAR(13)  NULL    ,
   PRIMARY KEY (id AUTOINCREMENT)
 );
 
