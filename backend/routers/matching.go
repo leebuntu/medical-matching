@@ -51,3 +51,29 @@ func GetMatching() gin.HandlerFunc {
 		}
 	}
 }
+
+func GetAllMatching() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID := ctx.GetInt("userID")
+
+		mm := matching.GetMatchingManager()
+		matchings := mm.GetAllMatching(userID)
+
+		ctx.JSON(http.StatusOK, gin.H{"matchings": matchings})
+	}
+}
+
+func EndMatching() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		matchingID := ctx.Param("matchingID")
+
+		mm := matching.GetMatchingManager()
+		err := mm.RemoveMatching(matchingID)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": constants.NotFound})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": constants.EndMatchingSuccess})
+	}
+}

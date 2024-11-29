@@ -36,14 +36,18 @@ func SetupRoutes(router *gin.Engine) {
 		{
 			hospitalGroup.Use(middlewares.AuthMiddleware())
 			hospitalGroup.GET("/", GetHospitalList())
-			hospitalGroup.GET("/:hospitalID", GetHospitalDetail())
+			hospitalGroup.GET("/:hospitalID/detail", GetHospitalDetail())
+			hospitalGroup.GET("/:hospitalID/brief", GetBriefHospital())
+			hospitalGroup.GET("/:hospitalID/reviews", GetHospitalReview())
 		}
 
 		matchingGroup := v1.Group("/matchings")
 		{
 			matchingGroup.Use(middlewares.AuthMiddleware())
 			matchingGroup.POST("/", CreateMatching())
+			matchingGroup.GET("/", GetAllMatching())
 			matchingGroup.GET("/:matchingID", GetMatching())
+			matchingGroup.DELETE("/:matchingID", EndMatching())
 		}
 	}
 }

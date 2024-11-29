@@ -31,6 +31,14 @@ func (m *Matching) GetState() int {
 	return m.state
 }
 
+func (m *Matching) GetUserID() int {
+	return m.userID
+}
+
+func (m *Matching) GetMatchingID() string {
+	return m.matchingID
+}
+
 func (m *Matching) setComposer() error {
 	priority, err := user.GetService().GetPriorityByID(m.userID)
 	if err != nil {
@@ -42,10 +50,6 @@ func (m *Matching) setComposer() error {
 	return nil
 }
 
-func (m *Matching) GetMatchingID() string {
-	return m.matchingID
-}
-
 func (m *Matching) StartMatching() {
 	m.state = constants.StartMatching
 
@@ -54,7 +58,6 @@ func (m *Matching) StartMatching() {
 		return
 	}
 
-	// TODO
 	mm := hospital.GetHospitalManager()
 	hospitals, err := mm.GetHospitals()
 	if err != nil {
@@ -63,10 +66,15 @@ func (m *Matching) StartMatching() {
 	}
 
 	best := FilteringHospital(hospitals, m.composer)
+	h := mm.GetHospital(best.HospitalID)
 
 	m.result = &dto.PoolingResponseCompleted{
-		HospitalID: best.HospitalID,
+		HospitalID:    best.HospitalID,
+		ContentOption: best.Content,
+		WaitingPerson: h.WaitingPerson,
 	}
+
+	m.state = constants.MatchingCompleted
 }
 
 func (m *Matching) GetCompleteResult() *dto.PoolingResponseCompleted {

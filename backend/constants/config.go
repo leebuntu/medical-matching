@@ -25,6 +25,7 @@ const (
 	AddPaymentMethodSuccess    = "결제 수단 추가 완료"
 	DeletePaymentMethodSuccess = "결제 수단 삭제 완료"
 	NotFound                   = "찾을 수 없는 리소스"
+	EndMatchingSuccess         = "매칭 종료"
 )
 
 const (
@@ -57,4 +58,9 @@ const (
 	WhileMatching
 	MatchingCompleted
 	MatchingFailed
+	MatchingEnded
+)
+
+const (
+	ReviewPerPage = 10
 )

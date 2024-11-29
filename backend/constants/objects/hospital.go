@@ -11,9 +11,7 @@ type Hospital struct {
 	WaitingPerson      int
 	ReviewStat         ReviewStat
 	Facility           HospitalFacility
-	Reserved           int
-	Reserved2          int
-	Reserved3          int
+	OpenTime           []OpenTime
 }
 
 type ReviewStat struct {
@@ -36,4 +34,10 @@ type ScoredHospital struct {
 	HospitalID int
 	Score      float64
 	Content    []string
+}
+
+type OpenTime struct {
+	DayOfWeek int    `json:"day_of_week"`
+	OpenTime  string `json:"open_time"`
+	CloseTime string `json:"close_time"`
 }

@@ -31,7 +31,3 @@ type RetrievePaymentMethod struct {
 	CardNumber string `json:"card_number"`
 	ExpDate    string `json:"exp_date"`
 }
-
-type PaymentMethodList struct {
-	PaymentMethods []RetrievePaymentMethod `json:"payment_methods"`
-}
