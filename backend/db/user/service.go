@@ -1,4 +1,4 @@
-package auth
+package user
 
 import (
 	"database/sql"
@@ -7,20 +7,20 @@ import (
 	"sync"
 )
 
-type AuthService struct {
+type UserService struct {
 	db *sql.DB
 }
 
 var once sync.Once
-var authInstance *AuthService
+var userInstance *UserService
 
-func GetService() *AuthService {
+func GetService() *UserService {
 	once.Do(func() {
 		db, err := db.GetDBManager().GetDB(constants.UserDB)
 		if err != nil {
 			return
 		}
-		authInstance = &AuthService{db: db}
+		userInstance = &UserService{db: db}
 	})
-	return authInstance
+	return userInstance
 }

@@ -2,18 +2,31 @@ package sets
 
 import (
 	"database/sql"
+	"medical-matching/constants"
+	"medical-matching/db"
+	"sync"
 )
 
 type SymptomInjection struct {
 	db *sql.DB
 }
 
+var symptomOnce sync.Once
+var symptomInstance *SymptomInjection
+
 var symptoms = []string{
 	"headache", "fever", "whirl", "lump", "hair_loss",
 }
 
-func NewSymptomInjection(db *sql.DB) *SymptomInjection {
-	return &SymptomInjection{db: db}
+func GetSymptomInjection() *SymptomInjection {
+	symptomOnce.Do(func() {
+		db, err := db.GetDBManager().GetDB(constants.HospitalDB)
+		if err != nil {
+			return
+		}
+		symptomInstance = &SymptomInjection{db: db}
+	})
+	return symptomInstance
 }
 
 func (s *SymptomInjection) alreadyInjected() (bool, error) {

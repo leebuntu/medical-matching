@@ -1,13 +1,28 @@
 package sets
 
-import "database/sql"
+import (
+	"database/sql"
+	"medical-matching/constants"
+	"medical-matching/db"
+	"sync"
+)
 
 type HospitalInjection struct {
 	db *sql.DB
 }
 
-func NewHospitalInjection(db *sql.DB) *HospitalInjection {
-	return &HospitalInjection{db: db}
+var hospitalOnce sync.Once
+var hospitalInstance *HospitalInjection
+
+func GetHospitalInjection() *HospitalInjection {
+	hospitalOnce.Do(func() {
+		db, err := db.GetDBManager().GetDB(constants.HospitalDB)
+		if err != nil {
+			return
+		}
+		hospitalInstance = &HospitalInjection{db: db}
+	})
+	return hospitalInstance
 }
 
 func (h *HospitalInjection) alreadyInjected() (bool, error) {
@@ -19,19 +34,13 @@ func (h *HospitalInjection) alreadyInjected() (bool, error) {
 	return count > 0, nil
 }
 
-func (h *HospitalInjection) InjectTestHospital() error {
+func (h *HospitalInjection) InjectHospital() error {
 	alreadyInjected, err := h.alreadyInjected()
 	if err != nil {
 		return err
 	}
 	if alreadyInjected {
 		return nil
-	}
-
-	_, err = h.db.Exec("INSERT INTO hospital (name, owner_name, address, postal_code, contact_phone_number) VALUES (?, ?, ?, ?, ?)", "test", "test", "test", "test", "test")
-
-	if err != nil {
-		return err
 	}
 
 	return nil

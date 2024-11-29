@@ -1,19 +1,19 @@
 package objects
 
 type Hospital struct {
-	ID            int
-	Name          string
-	OwnerName     string
-	Address       string
-	PostalCode    string
-	ContactPhone  string
-	Symptoms      []int
-	WaitingPerson int
-	ReviewStat    ReviewStat
-	Facility      HospitalFacility
-	Reserved      int
-	Reserved2     int
-	Reserved3     int
+	ID                 int
+	Name               string
+	OwnerName          string
+	Address            string
+	PostalCode         string
+	ContactPhoneNumber string
+	Symptoms           []*Symptom
+	WaitingPerson      int
+	ReviewStat         ReviewStat
+	Facility           HospitalFacility
+	Reserved           int
+	Reserved2          int
+	Reserved3          int
 }
 
 type ReviewStat struct {
@@ -25,4 +25,15 @@ type ReviewStat struct {
 
 type HospitalFacility struct {
 	HaveParkingLot bool
+}
+
+type Symptom struct {
+	ID   int
+	Name string
+}
+
+type ScoredHospital struct {
+	HospitalID int
+	Score      float64
+	Content    []string
 }

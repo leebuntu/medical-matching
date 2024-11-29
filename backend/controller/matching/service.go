@@ -3,7 +3,7 @@ package matching
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db"
+	"medical-matching/db/hospital"
 	"medical-matching/db/user"
 
 	"github.com/google/uuid"
@@ -31,13 +31,8 @@ func (m *Matching) GetState() int {
 	return m.state
 }
 
-func (m *Matching) getPriority() error {
-	db, err := db.GetDBManager().GetDB(constants.UserDB)
-	if err != nil {
-		return err
-	}
-
-	priority, err := user.NewUserService(db).GetPriorityByID(m.userID)
+func (m *Matching) setComposer() error {
+	priority, err := user.GetService().GetPriorityByID(m.userID)
 	if err != nil {
 		return err
 	}
@@ -51,12 +46,29 @@ func (m *Matching) GetMatchingID() string {
 	return m.matchingID
 }
 
-func (m *Matching) StartMatching() { // implement only find hospital
+func (m *Matching) StartMatching() {
 	m.state = constants.StartMatching
 
-	if err := m.getPriority(); err != nil {
+	if err := m.setComposer(); err != nil {
 		m.state = constants.MatchingFailed
 		return
 	}
 
+	// TODO
+	mm := hospital.GetHospitalManager()
+	hospitals, err := mm.GetHospitals()
+	if err != nil {
+		m.state = constants.MatchingFailed
+		return
+	}
+
+	best := FilteringHospital(hospitals, m.composer)
+
+	m.result = &dto.PoolingResponseCompleted{
+		HospitalID: best.HospitalID,
+	}
+}
+
+func (m *Matching) GetCompleteResult() *dto.PoolingResponseCompleted {
+	return m.result
 }

@@ -34,12 +34,13 @@ func (m *MatchingManager) GetMatching(matchingID string) (*Matching, error) {
 func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) (*Matching, error) {
 	// TODO: check limit
 
-	matching := &Matching{
-		userID:  userID,
-		context: context,
-	}
+	matching := NewMatching(userID, context)
 
 	m.matchings[matching.matchingID] = matching
 
 	return matching, nil
+}
+
+func (m *MatchingManager) RemoveMatching(matchingID string) {
+	delete(m.matchings, matchingID)
 }

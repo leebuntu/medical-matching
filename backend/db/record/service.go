@@ -1,4 +1,4 @@
-package auth
+package record
 
 import (
 	"database/sql"
@@ -7,20 +7,20 @@ import (
 	"sync"
 )
 
-type AuthService struct {
+type RecordService struct {
 	db *sql.DB
 }
 
 var once sync.Once
-var authInstance *AuthService
+var instance *RecordService
 
-func GetService() *AuthService {
+func GetService() *RecordService {
 	once.Do(func() {
 		db, err := db.GetDBManager().GetDB(constants.UserDB)
 		if err != nil {
 			return
 		}
-		authInstance = &AuthService{db: db}
+		instance = &RecordService{db: db}
 	})
-	return authInstance
+	return instance
 }

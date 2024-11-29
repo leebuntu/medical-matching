@@ -82,8 +82,8 @@ func (c *Composer) calculateLeastWalk(hospital *objects.Hospital, weight float64
 func (c *Composer) getHospitalScore(hospital *objects.Hospital) (float64, error) {
 	totalScore := 0.0
 
-	for index, order := range c.orders {
-		score, err := c.methods[order](hospital, c.weights[index])
+	for i, order := range c.orders {
+		score, err := c.methods[order](hospital, c.weights[i])
 		if err != nil {
 			return 0, err
 		}

@@ -9,6 +9,7 @@ import (
 func (s *AuthService) Login(r *dto.LoginRequest) (int, error) {
 	var userID int
 	var hashedPassword string
+
 	err := s.db.QueryRow("SELECT id, hashed_password FROM user WHERE email = ?", r.Email).Scan(&userID, &hashedPassword)
 	if err != nil {
 		return 0, err

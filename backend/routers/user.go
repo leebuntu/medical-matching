@@ -3,7 +3,6 @@ package routers
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db"
 	"medical-matching/db/user"
 	"net/http"
 
@@ -12,13 +11,11 @@ import (
 
 func GetUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		db, userID, err := initRouteHandler(c, nil, constants.UserDB)
-		if err != nil {
-			return
-		}
+		userID := c.GetInt("userID")
 
-		userService := user.NewUserService(db)
+		userService := user.GetService()
 		profile, err := userService.GetUserProfile(userID)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
@@ -33,13 +30,14 @@ func UpdateUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		profile := dto.UserProfileUpdate{}
 
-		db, userID, err := initRouteHandler(c, &profile, constants.UserDB)
+		userID, err := CheckBindData(c, &profile)
 		if err != nil {
 			return
 		}
 
-		userService := user.NewUserService(db)
-		err = userService.UpdateUserProfile(userID, profile)
+		userService := user.GetService()
+		err = userService.UpdateUserProfile(userID, &profile)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
@@ -52,7 +50,7 @@ func UpdateUserProfile() gin.HandlerFunc {
 func DeleteUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"message": "DeleteUserProfile",
+			"message": "Not implemented",
 		})
 	}
 }
@@ -61,10 +59,14 @@ func AddPaymentMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var card dto.PaymentMethod
 
-		db, userID, err := initRouteHandler(c, &card, constants.UserDB)
+		userID, err := CheckBindData(c, &card)
+		if err != nil {
+			return
+		}
 
-		paymentService := user.NewPaymentService(db)
-		err = paymentService.AddPaymentMethod(userID, card)
+		userService := user.GetService()
+		err = userService.AddPaymentMethod(userID, &card)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
@@ -76,13 +78,11 @@ func AddPaymentMethod() gin.HandlerFunc {
 
 func GetPaymentMethodList() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		db, userID, err := initRouteHandler(c, nil, constants.UserDB)
-		if err != nil {
-			return
-		}
+		userID := c.GetInt("userID")
 
-		paymentService := user.NewPaymentService(db)
-		paymentMethods, err := paymentService.GetPaymentMethodList(userID)
+		userService := user.GetService()
+		paymentMethods, err := userService.GetPaymentMethodList(userID)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
@@ -97,14 +97,9 @@ func DeletePaymentMethod() gin.HandlerFunc {
 		userID := c.GetInt("userID")
 		cardID := c.Param("cardID")
 
-		db, err := db.GetDBManager().GetDB(constants.UserDB)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
-			return
-		}
+		userService := user.GetService()
+		err := userService.DeletePaymentMethod(userID, cardID)
 
-		paymentService := user.NewPaymentService(db)
-		err = paymentService.DeletePaymentMethod(userID, cardID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return

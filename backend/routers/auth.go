@@ -14,14 +14,14 @@ func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginRequest dto.LoginRequest
 
-		db, _, err := initRouteHandler(c, &loginRequest, constants.UserDB)
+		_, err := CheckBindData(c, &loginRequest)
 		if err != nil {
 			return
 		}
 
-		loginService := auth.NewAuthService(db)
-
+		loginService := auth.GetService()
 		userID, err := loginService.Login(&loginRequest)
+
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": constants.WrongAccountOrPassword,
@@ -47,14 +47,14 @@ func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var registerRequest dto.RegisterRequest
 
-		db, _, err := initRouteHandler(c, &registerRequest, constants.UserDB)
+		_, err := CheckBindData(c, &registerRequest)
 		if err != nil {
 			return
 		}
 
-		registerService := auth.NewAuthService(db)
-
+		registerService := auth.GetService()
 		registerResult, err := registerService.Register(&registerRequest)
+
 		if !registerResult {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": constants.DuplicateUser,

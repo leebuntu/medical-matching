@@ -11,11 +11,9 @@ import (
 
 func CreateMatching() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		userID := ctx.GetInt("userID")
-
 		rq := dto.MatchingRequest{}
-		if err := ctx.ShouldBindJSON(&rq); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
+		userID, err := CheckBindData(ctx, &rq)
+		if err != nil {
 			return
 		}
 
@@ -44,7 +42,10 @@ func GetMatching() gin.HandlerFunc {
 		}
 
 		if matching.GetState() == constants.MatchingCompleted {
-			ctx.JSON(http.StatusOK, dto.PoolingResponseCompleted{State: constants.MatchingCompleted})
+			ctx.JSON(http.StatusOK, matching.GetCompleteResult())
+		} else if matching.GetState() == constants.MatchingFailed {
+			ctx.JSON(http.StatusOK, dto.PoolingResponseNotCompleted{State: constants.MatchingFailed})
+			m.RemoveMatching(matchingID)
 		} else {
 			ctx.JSON(http.StatusOK, dto.PoolingResponseNotCompleted{State: 0})
 		}

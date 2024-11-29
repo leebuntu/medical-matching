@@ -7,56 +7,49 @@ import (
 	"medical-matching/utils"
 )
 
-type UserService struct {
-	db      *sql.DB
-	profile dto.UserProfile
-}
-
-func NewUserService(db *sql.DB) *UserService {
-	return &UserService{db: db}
-}
-func (s *UserService) getEmailByID(id int) error {
-	err := s.db.QueryRow("SELECT email FROM user WHERE id = ?", id).Scan(&s.profile.Email)
+func (s *UserService) getEmailByID(id int, profile *dto.UserProfile) error {
+	err := s.db.QueryRow("SELECT email FROM user WHERE id = ?", id).Scan(&profile.Email)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) getBasicInfoByID(id int) error {
+func (s *UserService) getBasicInfoByID(id int, profile *dto.UserProfile) error {
 	var profile_url sql.NullString
 	var payment_id sql.NullString
 
-	err := s.db.QueryRow("SELECT name, profile_image_url, phone_number, home_address, candy, card_id FROM user_profile WHERE id = ?", id).Scan(&s.profile.Username, &profile_url, &s.profile.PhoneNumber, &s.profile.HomeAddress, &s.profile.Candy, &payment_id)
+	err := s.db.QueryRow("SELECT name, profile_image_url, phone_number, home_address, candy, card_id FROM user_profile WHERE id = ?", id).Scan(&profile.Username, &profile_url, &profile.PhoneNumber, &profile.HomeAddress, &profile.Candy, &payment_id)
 	if err != nil {
 		return err
 	}
 
 	if profile_url.Valid {
-		s.profile.ProfileURL = profile_url.String
+		profile.ProfileURL = profile_url.String
 	} else {
-		s.profile.ProfileURL = ""
+		profile.ProfileURL = ""
 	}
 
 	if payment_id.Valid {
-		s.profile.CardID = payment_id.String
+		profile.CardID = payment_id.String
 	} else {
-		s.profile.CardID = ""
+		profile.CardID = ""
 	}
 
 	return nil
 }
 
 func (s *UserService) GetPriorityByID(id int) ([]int, error) {
-	err := s.getPriorArrByID(id)
+	profile := dto.UserProfile{}
+	err := s.getPriorArrByID(id, &profile)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.profile.PriorityOption, nil
+	return profile.PriorityOption, nil
 }
 
-func (s *UserService) getPriorArrByID(id int) error {
+func (s *UserService) getPriorArrByID(id int, profile *dto.UserProfile) error {
 	priorityMap := make(map[int]int)
 
 	rows, err := s.db.Query("SELECT priority_id, rank FROM priority WHERE user_id = ?", id)
@@ -79,34 +72,33 @@ func (s *UserService) getPriorArrByID(id int) error {
 		priorityMap[priority_id] = rank
 	}
 
-	s.profile.PriorityOption = utils.SortMapByValueAndGetKeys(priorityMap)
+	profile.PriorityOption = utils.SortMapByValueAndGetKeys(priorityMap)
 
 	return nil
 }
 
-func (s *UserService) GetUserProfile(id int) (dto.UserProfile, error) {
-	s.profile = dto.UserProfile{}
+func (s *UserService) GetUserProfile(id int) (*dto.UserProfile, error) {
+	profile := dto.UserProfile{}
 
-	err := s.getEmailByID(id)
+	err := s.getEmailByID(id, &profile)
 	if err != nil {
-		return s.profile, err
+		return &profile, err
 	}
 
-	err = s.getBasicInfoByID(id)
+	err = s.getBasicInfoByID(id, &profile)
 	if err != nil {
-		return s.profile, err
+		return &profile, err
 	}
 
-	err = s.getPriorArrByID(id)
+	err = s.getPriorArrByID(id, &profile)
 	if err != nil {
-		fmt.Println(err)
-		return s.profile, err
+		return &profile, err
 	}
 
-	return s.profile, nil
+	return &profile, nil
 }
 
-func (s *UserService) UpdateUserProfile(id int, up dto.UserProfileUpdate) error {
+func (s *UserService) UpdateUserProfile(id int, up *dto.UserProfileUpdate) error {
 	_, err := s.db.Exec("DELETE FROM priority WHERE user_id = ?", id)
 	if err != nil {
 		return err

@@ -1,10 +1,23 @@
 package routers
 
-import "github.com/gin-gonic/gin"
+import (
+	"medical-matching/constants"
+	"medical-matching/db/hospital"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func GetHospitalList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// TODO: get hospital list
+		// NOTE: currently show all hospitals
+		hm := hospital.GetHospitalManager()
+		hospitals, err := hm.GetHospitals()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"hospitals": hospitals})
 	}
 }
 

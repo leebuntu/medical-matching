@@ -2,19 +2,37 @@ package main
 
 import (
 	"log"
-	"medical-matching/controller/hospital"
 	"medical-matching/db"
+	"medical-matching/db/hospital"
+	"medical-matching/db/sets"
 	"medical-matching/routers"
 
 	"github.com/gin-gonic/gin"
 )
 
-func initManager() error {
-	err := hospital.GetHospitalManager().InitHospitalManager()
+func injectData() error {
+	sm := sets.GetSymptomInjection()
+	hm := sets.GetHospitalInjection()
+
+	err := sm.InjectSymptoms()
 	if err != nil {
 		return err
 	}
-	err = hospital.GetSymptomManager().InitSymptomManager()
+
+	err = hm.InjectHospital()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func resetManagers() error {
+	err := hospital.GetHospitalManager().ResetHospitalManager()
+	if err != nil {
+		return err
+	}
+
+	err = hospital.GetSymptomManager().ResetSymptomManager()
 	if err != nil {
 		return err
 	}
@@ -29,12 +47,17 @@ func main() {
 	dbManager := db.GetDBManager()
 	dbManager.InitDB()
 
-	err := initManager()
+	defer dbManager.CloseAll()
+
+	err := injectData()
 	if err != nil {
 		log.Panic(err)
 	}
 
-	defer dbManager.CloseAll()
+	err = resetManagers()
+	if err != nil {
+		log.Panic(err)
+	}
 
 	r.Run(":8080")
 }
