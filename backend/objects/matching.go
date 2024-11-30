@@ -1,10 +1,8 @@
-package matching
+package objects
 
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db/hospital"
-	"medical-matching/db/user"
 
 	"github.com/google/uuid"
 )
@@ -39,39 +37,24 @@ func (m *Matching) GetMatchingID() string {
 	return m.matchingID
 }
 
-func (m *Matching) setComposer() error {
-	priority, err := user.GetService().GetPriorityByID(m.userID)
-	if err != nil {
-		return err
-	}
-
+func (m *Matching) SetComposer(priority []int) {
 	m.composer = NewComposer(priority)
-
-	return nil
 }
 
-func (m *Matching) StartMatching() {
+func (m *Matching) StartMatching(hospitals []*Hospital) {
 	m.state = constants.StartMatching
 
-	if err := m.setComposer(); err != nil {
-		m.state = constants.MatchingFailed
-		return
-	}
-
-	mm := hospital.GetHospitalManager()
-	hospitals, err := mm.GetHospitals()
-	if err != nil {
+	if m.composer == nil {
 		m.state = constants.MatchingFailed
 		return
 	}
 
 	best := FilteringHospital(hospitals, m.composer)
-	h := mm.GetHospital(best.HospitalID)
 
 	m.result = &dto.PoolingResponseCompleted{
 		HospitalID:    best.HospitalID,
 		ContentOption: best.Content,
-		WaitingPerson: h.WaitingPerson,
+		WaitingPerson: best.WaitingPerson,
 	}
 
 	m.state = constants.MatchingCompleted

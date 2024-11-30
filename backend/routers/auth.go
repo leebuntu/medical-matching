@@ -3,8 +3,9 @@ package routers
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db/auth"
+	"medical-matching/db/providers"
 	"medical-matching/middlewares"
+	"medical-matching/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,12 +15,12 @@ func LoginHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginRequest dto.LoginRequest
 
-		_, err := CheckBindData(c, &loginRequest)
+		_, err := utils.CheckBindData(c, &loginRequest)
 		if err != nil {
 			return
 		}
 
-		loginService := auth.GetService()
+		loginService := providers.GetAuthProvider()
 		userID, err := loginService.Login(&loginRequest)
 
 		if err != nil {
@@ -47,12 +48,12 @@ func RegisterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var registerRequest dto.RegisterRequest
 
-		_, err := CheckBindData(c, &registerRequest)
+		_, err := utils.CheckBindData(c, &registerRequest)
 		if err != nil {
 			return
 		}
 
-		registerService := auth.GetService()
+		registerService := providers.GetAuthProvider()
 		registerResult, err := registerService.Register(&registerRequest)
 
 		if !registerResult {

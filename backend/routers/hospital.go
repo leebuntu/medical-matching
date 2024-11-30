@@ -3,7 +3,9 @@ package routers
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db/hospital"
+	ch "medical-matching/controller/hospital"
+	"medical-matching/db/providers"
+	"medical-matching/utils"
 	"net/http"
 	"strconv"
 
@@ -12,9 +14,14 @@ import (
 
 func GetHospitalList() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// NOTE: currently show all hospitals
-		hm := hospital.GetHospitalManager()
-		hospitals, err := hm.GetHospitals()
+		longitude, latitude, radius, err := utils.ParseGEOQuery(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
+			return
+		}
+
+		hm := ch.GetHospitalManager()
+		hospitals, err := hm.GetHospitals(longitude, latitude, radius)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
@@ -31,7 +38,7 @@ func GetHospitalDetail() gin.HandlerFunc {
 			return
 		}
 
-		hm := hospital.GetHospitalManager()
+		hm := ch.GetHospitalManager()
 		hospital := hm.GetHospital(hospitalID)
 		if hospital == nil {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": constants.NotFound})
@@ -44,7 +51,7 @@ func GetHospitalDetail() gin.HandlerFunc {
 			Address:            hospital.Address,
 			ContactPhoneNumber: hospital.ContactPhoneNumber,
 			WaitingPerson:      hospital.WaitingPerson,
-			OpenTime:           hospital.OpenTime,
+			//TODOOpenTime:           hospital.OpenTime,
 		})
 	}
 }
@@ -57,7 +64,7 @@ func GetBriefHospital() gin.HandlerFunc {
 			return
 		}
 
-		hm := hospital.GetHospitalManager()
+		hm := ch.GetHospitalManager()
 		hospital := hm.GetHospital(hospitalID)
 		if hospital == nil {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": constants.NotFound})
@@ -91,7 +98,7 @@ func GetHospitalReview() gin.HandlerFunc {
 			return
 		}
 
-		rm := hospital.GetReviewManager()
+		rm := providers.GetReviewProvider()
 		reviews, err := rm.GetReview(hospitalID, pageInt)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})

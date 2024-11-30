@@ -6,8 +6,10 @@ type Symptoms struct {
 }
 
 type MatchingRequest struct {
-	BasisLocation string   `json:"basis_location"`
-	Symptoms      Symptoms `json:"symptoms"`
+	BasisLongitude float64  `json:"basis_longitude"`
+	BasisLatitude  float64  `json:"basis_latitude"`
+	Radius         float64  `json:"radius"`
+	Symptoms       Symptoms `json:"symptoms"`
 }
 
 type PoolingResponseNotCompleted struct {

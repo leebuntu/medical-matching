@@ -6,7 +6,10 @@ type Hospital struct {
 	OwnerName          string
 	Address            string
 	PostalCode         string
+	Longitude          float64
+	Latitude           float64
 	ContactPhoneNumber string
+	SymptomIDs         []int
 	Symptoms           []*Symptom
 	WaitingPerson      int
 	ReviewStat         ReviewStat
@@ -22,22 +25,18 @@ type ReviewStat struct {
 }
 
 type HospitalFacility struct {
-	HaveParkingLot bool
-}
-
-type Symptom struct {
-	ID   int
-	Name string
+	HaveParkingLot int
 }
 
 type ScoredHospital struct {
-	HospitalID int
-	Score      float64
-	Content    []string
+	HospitalID    int
+	Score         float64
+	Content       []string
+	WaitingPerson int
 }
 
 type OpenTime struct {
-	DayOfWeek int    `json:"day_of_week"`
-	OpenTime  string `json:"open_time"`
-	CloseTime string `json:"close_time"`
+	DayOfWeek int
+	OpenTime  string
+	CloseTime string
 }

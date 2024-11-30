@@ -1,34 +1,33 @@
-package hospital
+package providers
 
 import (
 	"database/sql"
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
 	"medical-matching/db"
-	"medical-matching/db/user"
 	"sync"
 )
 
-type ReviewManager struct {
+type ReviewProvider struct {
 	db *sql.DB
 }
 
 var reviewOnce sync.Once
-var reviewInstance *ReviewManager
+var reviewInstance *ReviewProvider
 
-func GetReviewManager() *ReviewManager {
+func GetReviewProvider() *ReviewProvider {
 	reviewOnce.Do(func() {
 		db, err := db.GetDBManager().GetDB(constants.ReviewDB)
 		if err != nil {
 			return
 		}
-		reviewInstance = &ReviewManager{db: db}
+		reviewInstance = &ReviewProvider{db: db}
 	})
 	return reviewInstance
 }
 
-func (m *ReviewManager) GetReview(hospitalID string, page int) ([]*dto.ReviewStat, error) {
-	rows, err := m.db.Query("SELECT id, user_id, timestamp, score, context FROM review WHERE hospital_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?", hospitalID, constants.ReviewPerPage, (page-1)*constants.ReviewPerPage)
+func (p *ReviewProvider) GetReview(hospitalID string, page int) ([]*dto.ReviewStat, error) {
+	rows, err := p.db.Query("SELECT id, user_id, timestamp, score, context FROM review WHERE hospital_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?", hospitalID, constants.ReviewPerPage, (page-1)*constants.ReviewPerPage)
 	if err != nil {
 		return nil, err
 	}
@@ -46,14 +45,14 @@ func (m *ReviewManager) GetReview(hospitalID string, page int) ([]*dto.ReviewSta
 			return nil, err
 		}
 
-		usr, err := user.GetService().GetUserProfile(userID)
+		usr, err := GetUserProvider().GetUserProfile(userID)
 		if err != nil {
 			return nil, err
 		}
 		review.ProfileURL = usr.ProfileURL
 		review.ProfileName = usr.Username
 
-		r, err := m.db.Query("SELECT photo_url FROM photo WHERE review_id = ?", reviewID)
+		r, err := p.db.Query("SELECT photo_url FROM photo WHERE review_id = ?", reviewID)
 		if err != nil {
 			return nil, err
 		}

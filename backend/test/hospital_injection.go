@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"medical-matching/constants"
 	"medical-matching/db"
+	"medical-matching/maps"
 	"os"
 	"strconv"
 	"strings"
@@ -73,7 +74,12 @@ func (h *HospitalInjection) injectHospitalHandleSymptom(id int, symptoms []int) 
 }
 
 func (h *HospitalInjection) injectHospitalBasic(name string, ownerName string, address string, postalCode string, phoneNumber string) (int, error) {
-	result, err := h.db.Exec("INSERT INTO hospital (name, owner_name, address, postal_code, contact_phone_number) VALUES (?, ?, ?, ?, ?)", name, ownerName, address, postalCode, phoneNumber)
+	geocode, err := maps.GetGeocode(address)
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := h.db.Exec("INSERT INTO hospital (name, owner_name, address, postal_code, longitude, latitude, contact_phone_number) VALUES (?, ?, ?, ?, ?, ?, ?)", name, ownerName, address, postalCode, geocode.Longitude, geocode.Latitude, phoneNumber)
 	if err != nil {
 		return 0, err
 	}

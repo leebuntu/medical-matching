@@ -3,7 +3,8 @@ package routers
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
-	"medical-matching/db/user"
+	"medical-matching/db/providers"
+	"medical-matching/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ func GetUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt("userID")
 
-		userService := user.GetService()
+		userService := providers.GetUserProvider()
 		profile, err := userService.GetUserProfile(userID)
 
 		if err != nil {
@@ -30,12 +31,12 @@ func UpdateUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		profile := dto.UserProfileUpdate{}
 
-		userID, err := CheckBindData(c, &profile)
+		userID, err := utils.CheckBindData(c, &profile)
 		if err != nil {
 			return
 		}
 
-		userService := user.GetService()
+		userService := providers.GetUserProvider()
 		err = userService.UpdateUserProfile(userID, &profile)
 
 		if err != nil {
@@ -59,12 +60,12 @@ func AddPaymentMethod() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var card dto.PaymentMethod
 
-		userID, err := CheckBindData(c, &card)
+		userID, err := utils.CheckBindData(c, &card)
 		if err != nil {
 			return
 		}
 
-		userService := user.GetService()
+		userService := providers.GetUserProvider()
 		err = userService.AddPaymentMethod(userID, &card)
 
 		if err != nil {
@@ -80,7 +81,7 @@ func GetPaymentMethodList() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.GetInt("userID")
 
-		userService := user.GetService()
+		userService := providers.GetUserProvider()
 		paymentMethods, err := userService.GetPaymentMethodList(userID)
 
 		if err != nil {
@@ -97,7 +98,7 @@ func DeletePaymentMethod() gin.HandlerFunc {
 		userID := c.GetInt("userID")
 		cardID := c.Param("cardID")
 
-		userService := user.GetService()
+		userService := providers.GetUserProvider()
 		err := userService.DeletePaymentMethod(userID, cardID)
 
 		if err != nil {

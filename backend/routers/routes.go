@@ -24,7 +24,7 @@ func SetupRoutes(router *gin.Engine) {
 			userGroup.PUT("/me", UpdateUserProfile())
 		}
 
-		paymentGroup := v1.Group("/payment-methods")
+		paymentGroup := v1.Group("/payments")
 		{
 			paymentGroup.Use(middlewares.AuthMiddleware())
 			paymentGroup.POST("/", AddPaymentMethod())

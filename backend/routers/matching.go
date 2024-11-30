@@ -3,7 +3,9 @@ package routers
 import (
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
+	"medical-matching/controller/hospital"
 	"medical-matching/controller/matching"
+	"medical-matching/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +13,14 @@ import (
 
 func CreateMatching() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		longitude, latitude, radius, err := utils.ParseGEOQuery(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
+			return
+		}
+
 		rq := dto.MatchingRequest{}
-		userID, err := CheckBindData(ctx, &rq)
+		userID, err := utils.CheckBindData(ctx, &rq)
 		if err != nil {
 			return
 		}
@@ -24,7 +32,12 @@ func CreateMatching() gin.HandlerFunc {
 			return
 		}
 
-		go m.StartMatching()
+		hospitals, err := hospital.GetHospitalManager().GetHospitals(longitude, latitude, radius)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+		go m.StartMatching(hospitals)
 
 		ctx.JSON(http.StatusOK, gin.H{"matching_id": m.GetMatchingID()})
 	}

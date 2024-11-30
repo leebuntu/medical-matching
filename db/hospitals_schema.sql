@@ -6,6 +6,8 @@ CREATE TABLE hospital
   owner_name           VARCHAR(255) NOT NULL,
   address              VARCHAR(255) NOT NULL,
   postal_code          VARCHAR(6)   NOT NULL,
+  longitude            REAL         NOT NULL,
+  latitude             REAL         NOT NULL,
   contact_phone_number VARCHAR(20)  NULL    ,
   PRIMARY KEY (id AUTOINCREMENT)
 );

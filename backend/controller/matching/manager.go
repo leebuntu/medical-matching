@@ -3,11 +3,12 @@ package matching
 import (
 	"errors"
 	"medical-matching/constants/dto"
+	"medical-matching/objects"
 	"sync"
 )
 
 type MatchingManager struct {
-	matchings map[string]*Matching
+	matchings map[string]*objects.Matching
 }
 
 var once sync.Once
@@ -16,14 +17,14 @@ var instance *MatchingManager
 func GetMatchingManager() *MatchingManager {
 	once.Do(func() {
 		instance = &MatchingManager{
-			matchings: make(map[string]*Matching),
+			matchings: make(map[string]*objects.Matching),
 		}
 	})
 
 	return instance
 }
 
-func (m *MatchingManager) GetMatching(matchingID string) (*Matching, error) {
+func (m *MatchingManager) GetMatching(matchingID string) (*objects.Matching, error) {
 	matching, ok := m.matchings[matchingID]
 	if !ok {
 		return nil, errors.New("matching not found")
@@ -31,12 +32,12 @@ func (m *MatchingManager) GetMatching(matchingID string) (*Matching, error) {
 	return matching, nil
 }
 
-func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) (*Matching, error) {
+func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) (*objects.Matching, error) {
 	// TODO: check limit
 
-	matching := NewMatching(userID, context)
+	matching := objects.NewMatching(userID, context)
 
-	m.matchings[matching.matchingID] = matching
+	m.matchings[matching.GetMatchingID()] = matching
 
 	return matching, nil
 }
