@@ -4,15 +4,15 @@ import (
 	"log"
 	"medical-matching/db"
 	"medical-matching/db/hospital"
-	"medical-matching/db/sets"
 	"medical-matching/routers"
+	"medical-matching/test"
 
 	"github.com/gin-gonic/gin"
 )
 
 func injectData() error {
-	sm := sets.GetSymptomInjection()
-	hm := sets.GetHospitalInjection()
+	sm := test.GetSymptomInjection()
+	hm := test.GetHospitalInjection()
 
 	err := sm.InjectSymptoms()
 	if err != nil {

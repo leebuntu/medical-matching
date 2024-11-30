@@ -6,7 +6,7 @@ CREATE TABLE hospital
   owner_name           VARCHAR(255) NOT NULL,
   address              VARCHAR(255) NOT NULL,
   postal_code          VARCHAR(6)   NOT NULL,
-  contact_phone_number VARCHAR(13)  NULL    ,
+  contact_phone_number VARCHAR(20)  NULL    ,
   PRIMARY KEY (id AUTOINCREMENT)
 );
 
@@ -41,11 +41,11 @@ CREATE TABLE hospital_open_date
 
 CREATE TABLE hospital_review_stat
 (
-  id             INTEGER NOT NULL,
-  average_rating FLOAT   NOT NULL DEFAULT 0.0,
-  total_rating   INT     NOT NULL DEFAULT 0,
-  review_count   INT     NOT NULL DEFAULT 0,
-  dx_rating      FLOAT   NOT NULL DEFAULT 0.0,
+  id               INTEGER NOT NULL,
+  average_rating   FLOAT   NOT NULL DEFAULT 0.0,
+  total_rating     INT     NOT NULL DEFAULT 0,
+  review_count     INT     NOT NULL DEFAULT 0,
+  rating_stability FLOAT   NOT NULL DEFAULT 0.0,
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES hospital (id)
 );

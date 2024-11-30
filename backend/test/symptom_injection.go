@@ -1,4 +1,4 @@
-package sets
+package test
 
 import (
 	"database/sql"
@@ -15,7 +15,7 @@ var symptomOnce sync.Once
 var symptomInstance *SymptomInjection
 
 var symptoms = []string{
-	"headache", "fever", "whirl", "lump", "hair_loss",
+	"headache", "fever", "whirl", "lump", "hair_loss", "cavities", "myopia",
 }
 
 func GetSymptomInjection() *SymptomInjection {

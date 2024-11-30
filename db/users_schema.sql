@@ -14,13 +14,13 @@ CREATE TABLE medical_record
 
 CREATE TABLE payment_method
 (
-  id               TEXT        NOT NULL,
+  id               INTEGER     NULL    ,
   user_id          INTEGER     NOT NULL,
   card_holder_name VARCHAR(30) NOT NULL,
   card_number      VARCHAR(19) NOT NULL,
   exp_date         VARCHAR(5)  NOT NULL,
   cvv              VARCHAR(4)  NOT NULL,
-  PRIMARY KEY (id),
+  PRIMARY KEY (id AUTOINCREMENT),
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
@@ -44,15 +44,15 @@ CREATE TABLE user
 
 CREATE TABLE user_profile
 (
-  id                INTEGER      NULL    ,
+  id                INTEGER      NOT NULL,
   name              VARCHAR(20)  NOT NULL,
   profile_image_url VARCHAR(255) NULL     DEFAULT NULL,
-  phone_number      VARCHAR(13)  NOT NULL,
+  phone_number      VARCHAR(20)  NOT NULL,
   home_address      VARCHAR(255) NOT NULL,
   postal_code       VARCHAR(6)   NOT NULL,
   candy             INT          NOT NULL DEFAULT 0,
-  card_id           TEXT         NULL    ,
-  PRIMARY KEY (id AUTOINCREMENT),
+  card_id           INTEGER      NULL    ,
+  PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES user (id),
   FOREIGN KEY (card_id) REFERENCES payment_method (id)
 );

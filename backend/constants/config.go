@@ -12,6 +12,7 @@ const (
 	UserDB     = "UserDB"
 	HospitalDB = "HospitalDB"
 	ReviewDB   = "ReviewDB"
+	TestData   = "test_data.csv"
 )
 
 const (

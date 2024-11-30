@@ -11,14 +11,14 @@ type Hospital struct {
 	WaitingPerson      int
 	ReviewStat         ReviewStat
 	Facility           HospitalFacility
-	OpenTime           []OpenTime
+	OpenTime           []*OpenTime
 }
 
 type ReviewStat struct {
-	AverageRating float64
-	TotalRating   int
-	ReviewCount   int
-	DXRating      float64
+	AverageRating   float64
+	TotalRating     int
+	ReviewCount     int
+	RatingStability float64
 }
 
 type HospitalFacility struct {

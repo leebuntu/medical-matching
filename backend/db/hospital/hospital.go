@@ -74,15 +74,10 @@ func (m *HospitalManager) getHospitalHandleSymptoms() error {
 
 func (m *HospitalManager) getHospitalReviewStat() error {
 	for _, hospital := range m.hospitals {
-		rows, err := m.db.Query("SELECT average_rating, total_rating, review_count, dx_rating FROM hospital_review_stat WHERE hospital_id = ?", hospital.ID)
-		if err != nil {
-			return err
-		}
-
-		defer rows.Close()
+		row := m.db.QueryRow("SELECT average_rating, total_rating, review_count, rating_stability FROM hospital_review_stat WHERE id = ?", hospital.ID)
 
 		stat := objects.ReviewStat{}
-		err = rows.Scan(&stat.AverageRating, &stat.TotalRating, &stat.ReviewCount, &stat.DXRating)
+		err := row.Scan(&stat.AverageRating, &stat.TotalRating, &stat.ReviewCount, &stat.RatingStability)
 		if err != nil {
 			return err
 		}
@@ -95,15 +90,10 @@ func (m *HospitalManager) getHospitalReviewStat() error {
 
 func (m *HospitalManager) getHospitalFacility() error {
 	for _, hospital := range m.hospitals {
-		rows, err := m.db.Query("SELECT parking_lot FROM hospital_facility WHERE hospital_id = ?", hospital.ID)
-		if err != nil {
-			return err
-		}
-
-		defer rows.Close()
+		row := m.db.QueryRow("SELECT parking_lot FROM hospital_facility WHERE id = ?", hospital.ID)
 
 		var parkingLot int
-		err = rows.Scan(&parkingLot)
+		err := row.Scan(&parkingLot)
 		if err != nil {
 			return err
 		}
