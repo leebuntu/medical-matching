@@ -17,8 +17,8 @@ type PoolingResponseNotCompleted struct {
 }
 
 type PoolingResponseCompleted struct {
-	State         int      `json:"state"`
-	HospitalID    int      `json:"hospital_id"`
-	ContentOption []string `json:"content_option"`
-	WaitingPerson int      `json:"waiting_person"`
+	State         int   `json:"state"`
+	HospitalID    int   `json:"hospital_id"`
+	ContentOption []int `json:"content_option"`
+	WaitingPerson int   `json:"waiting_person"`
 }

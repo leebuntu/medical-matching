@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { margin-bottom: 20px; }
+        textarea { width: 100%; height: 80px; }
+        button { margin-top: 10px; padding: 10px 20px; }
+        pre { background-color: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>API Test Interface</h1>
+
+    <!-- 회원가입 -->
+    <div class="container">
+        <h2>회원가입</h2>
+        <textarea id="register-body">{
+    "email": "peter070230@gmail.com",
+    "password": "test",
+    "username": "YOgurt",
+    "phone_number": "01049344876",
+    "home_address": "215Du",
+    "postal_code": "25112"
+}</textarea>
+        <button onclick="sendRequest('POST', '/v1/auth/register', getJSON('register-body'))">Register</button>
+    </div>
+
+    <!-- 로그인 -->
+    <div class="container">
+        <h2>로그인</h2>
+        <input type="text" id="login-token" placeholder="JWT Token" style="width: 100%;" />
+        <button onclick="sendRequest('GET', '/v1/medical-records/123123', null, getToken('login-token'))">Login</button>
+    </div>
+
+    <!-- 병원 리스트 -->
+    <div class="container">
+        <h2>병원 리스트</h2>
+        <input type="text" id="hospital-token" placeholder="JWT Token" style="width: 100%;" />
+        <button onclick="sendRequest('GET', '/v1/hospitals?longitude=127.3457442&latitude=36.3666380&radius=0.45', null, getToken('hospital-token'))">Get Hospitals</button>
+    </div>
+
+    <!-- 매칭 시작 -->
+    <div class="container">
+        <h2>매칭 시작</h2>
+        <textarea id="matching-body">{
+    "basis_longitude": 127.3457442,
+    "basis_latitude": 36.366638,
+    "radius": 1,
+    "symptoms": {
+        "known_symptoms": [1, 2, 3],
+        "additional_symptoms": "Fatigue, headache"
+    }
+}</textarea>
+        <input type="text" id="matching-token" placeholder="JWT Token" style="width: 100%;" />
+        <button onclick="sendRequest('POST', '/v1/matchings', getJSON('matching-body'), getToken('matching-token'))">Start Matching</button>
+    </div>
+
+    <!-- 매칭 정보 -->
+    <div class="container">
+        <h2>매칭 정보</h2>
+        <input type="text" id="matching-info-token" placeholder="JWT Token" style="width: 100%;" />
+        <input type="text" id="matching-id" placeholder="Matching ID" style="width: 100%; margin-top: 10px;" />
+        <button onclick="sendRequest('GET', `/v1/matchings/${document.getElementById('matching-id').value}`, null, getToken('matching-info-token'))">Get Matching Info</button>
+    </div>
+
+    <!-- 결과 -->
+    <div class="container">
+        <h2>Response</h2>
+        <pre id="response"></pre>
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:8080";
+
+        // Helper to get JSON from textarea
+        function getJSON(id) {
+            try {
+                return JSON.parse(document.getElementById(id).value);
+            } catch (e) {
+                alert("Invalid JSON format");
+                return null;
+            }
+        }
+
+        // Helper to get token from input
+        function getToken(id) {
+            return document.getElementById(id).value;
+        }
+
+        // Send API Request
+        async function sendRequest(method, endpoint, body, token = null) {
+            const url = BASE_URL + endpoint;
+            const options = {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+            };
+
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            if (token) {
+                options.headers["Authorization"] = `Bearer ${token}`;
+            }
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById("response").textContent = `Error: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

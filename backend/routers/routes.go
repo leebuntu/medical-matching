@@ -49,5 +49,12 @@ func SetupRoutes(router *gin.Engine) {
 			matchingGroup.GET("/:matchingID", GetMatching())
 			matchingGroup.DELETE("/:matchingID", EndMatching())
 		}
+
+		recordGroup := v1.Group("/medical-records")
+		{
+			recordGroup.Use(middlewares.AuthMiddleware())
+			recordGroup.GET("", GetRecordList())
+			recordGroup.PATCH("/:recordID", UpdateRecordNotes())
+		}
 	}
 }

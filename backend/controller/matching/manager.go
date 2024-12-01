@@ -23,10 +23,13 @@ func GetMatchingManager() *MatchingManager {
 	return instance
 }
 
-func (m *MatchingManager) GetMatching(matchingID string) (*objects.Matching, error) {
+func (m *MatchingManager) GetMatching(matchingID string, userID int) (*objects.Matching, error) {
 	matching, ok := m.matchings[matchingID]
 	if !ok {
 		return nil, errors.New("matching not found")
+	}
+	if matching.GetUserID() != userID {
+		return nil, errors.New("permission denied")
 	}
 	return matching, nil
 }

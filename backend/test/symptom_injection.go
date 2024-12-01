@@ -2,8 +2,10 @@ package test
 
 import (
 	"database/sql"
+	"encoding/csv"
 	"medical-matching/constants"
 	"medical-matching/db"
+	"os"
 	"sync"
 )
 
@@ -13,10 +15,6 @@ type SymptomInjection struct {
 
 var symptomOnce sync.Once
 var symptomInstance *SymptomInjection
-
-var symptoms = []string{
-	"headache", "fever", "whirl", "lump", "hair_loss", "cavities", "myopia",
-}
 
 func GetSymptomInjection() *SymptomInjection {
 	symptomOnce.Do(func() {
@@ -47,8 +45,26 @@ func (s *SymptomInjection) InjectSymptoms() error {
 		return nil
 	}
 
-	for _, symptom := range symptoms {
-		_, err := s.db.Exec("INSERT INTO symptom (name) VALUES (?)", symptom)
+	file, err := os.Open(constants.TestDataPath + constants.SymptomTestData)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	_, err = reader.Read()
+	if err != nil {
+		return err
+	}
+
+	for {
+		record, err := reader.Read()
+		if err != nil {
+			break
+		}
+
+		_, err = s.db.Exec("INSERT INTO symptom (name) VALUES (?)", record[0])
 		if err != nil {
 			return err
 		}

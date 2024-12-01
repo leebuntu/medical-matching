@@ -8,11 +8,13 @@ var DatabaseNames = map[string]string{
 }
 
 const (
-	DBPath     = "../db/"
-	UserDB     = "UserDB"
-	HospitalDB = "HospitalDB"
-	ReviewDB   = "ReviewDB"
-	TestData   = "test_data.csv"
+	DBPath           = "../db/"
+	TestDataPath     = DBPath + "testdata/"
+	UserDB           = "UserDB"
+	HospitalDB       = "HospitalDB"
+	ReviewDB         = "ReviewDB"
+	HospitalTestData = "hospitals.csv"
+	SymptomTestData  = "symptoms.csv"
 )
 
 const (
@@ -65,4 +67,5 @@ const (
 
 const (
 	ReviewPerPage = 10
+	RecordPerPage = 5
 )

@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"fmt"
 	"medical-matching/constants"
 	"medical-matching/constants/dto"
 	"medical-matching/controller/hospital"
@@ -40,7 +41,14 @@ func CreateMatching() gin.HandlerFunc {
 			return
 		}
 
-		go m.StartMatching(priority, hospitals)
+		go func() {
+			m.StartMatching(priority, hospitals)
+			rp := providers.GetRecordProvider()
+			err = rp.AddRecord(userID, m.GetCompleteResult().HospitalID, "#test")
+			if err != nil {
+				fmt.Println(err)
+			}
+		}()
 
 		ctx.JSON(http.StatusOK, gin.H{"matching_id": m.GetMatchingID()})
 	}
@@ -49,9 +57,10 @@ func CreateMatching() gin.HandlerFunc {
 func GetMatching() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		matchingID := ctx.Param("matchingID")
+		userID := ctx.GetInt("userID")
 
 		m := matching.GetMatchingManager()
-		matching, err := m.GetMatching(matchingID)
+		matching, err := m.GetMatching(matchingID, userID)
 		if err != nil {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": constants.NotFound})
 			return

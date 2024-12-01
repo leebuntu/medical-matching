@@ -1,19 +1,11 @@
 package objects
 
 import (
-	"fmt"
 	"sync"
 )
 
-type ScoredHospital struct {
-	HospitalID    int
-	Score         float64
-	Content       []string
-	WaitingPerson int
-}
-
 func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospital {
-	resultChan := make(chan ScoredHospital, len(hospitals))
+	resultChan := make(chan *ScoredHospital, len(hospitals))
 
 	var wait sync.WaitGroup
 
@@ -22,12 +14,11 @@ func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospita
 		go func(hospital *Hospital) {
 			defer wait.Done()
 			score, err := composer.GetHospitalScore(hospital)
-			if err != nil {
-				fmt.Println(err)
-				resultChan <- ScoredHospital{HospitalID: hospital.ID, Score: 0, WaitingPerson: hospital.WaitingPerson}
+			if err != nil || score == nil {
+				resultChan <- &ScoredHospital{HospitalID: hospital.ID, Score: 0, Content: []int{}, WaitingPerson: hospital.WaitingPerson}
 				return
 			}
-			resultChan <- ScoredHospital{HospitalID: hospital.ID, Score: score, WaitingPerson: hospital.WaitingPerson}
+			resultChan <- &ScoredHospital{HospitalID: hospital.ID, Score: score.TotalScore, Content: score.ContentRank, WaitingPerson: hospital.WaitingPerson}
 		}(hospital)
 	}
 
@@ -38,7 +29,7 @@ func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospita
 
 	for scores := range resultChan {
 		if best == nil || scores.Score > best.Score {
-			best = &scores
+			best = scores
 		}
 	}
 

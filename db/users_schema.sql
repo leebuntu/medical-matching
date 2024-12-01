@@ -1,13 +1,14 @@
 
 CREATE TABLE medical_record
 (
-  id          INTEGER       NULL    ,
-  user_id     INTEGER       NOT NULL,
-  hospital_id INTEGER       NOT NULL,
-  timestamp   TIMESTAMP     NOT NULL,
-  doctor_name VARCHAR(20)   NOT NULL,
-  notes       VARCHAR(1200) NULL    ,
-  symptom     VARCHAR(1200) NULL    ,
+  id            INTEGER       NULL    ,
+  user_id       INTEGER       NOT NULL,
+  hospital_id   INTEGER       NOT NULL,
+  timestamp     TIMESTAMP     NOT NULL,
+  hospital_name VARCHAR(255)  NOT NULL,
+  doctor_name   VARCHAR(255)  NOT NULL,
+  notes         VARCHAR(1200) NULL    ,
+  symptom       VARCHAR(1200) NULL    ,
   PRIMARY KEY (id AUTOINCREMENT),
   FOREIGN KEY (user_id) REFERENCES user (id)
 );

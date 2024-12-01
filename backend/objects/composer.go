@@ -3,6 +3,7 @@ package objects
 import (
 	"medical-matching/constants"
 	"slices"
+	"sort"
 )
 
 type Composer struct {
@@ -70,9 +71,9 @@ func (c *Composer) calculateLeastWalk(hospital *Hospital) (float64, error) {
 	return 0.0, nil
 }
 
-func (c *Composer) calculateWeightedScore(scores []float64) float64 {
+func (c *Composer) calculateWeightedScore(scores []float64) []float64 {
 	weights := []float64{constants.Weights[1], constants.Weights[2], constants.Weights[3]}
-	totalScore := 0.0
+	totalScores := make([]float64, constants.TotalPriority)
 
 	priorityWeight := make(map[int]float64)
 	for i, priority := range c.priority {
@@ -86,13 +87,38 @@ func (c *Composer) calculateWeightedScore(scores []float64) float64 {
 		if !exists {
 			weight = constants.Weights[4]
 		}
-		totalScore += score * weight
+		totalScores[i] = score * weight
 	}
 
-	return totalScore
+	return totalScores
 }
 
-func (c *Composer) getHospitalScore(hospital *Hospital) (float64, error) {
+func (c *Composer) getContentRank(scores []float64) []int {
+	n := 3
+
+	type ValueIndex struct {
+		Value float64
+		Index int
+	}
+
+	valueIndexes := make([]ValueIndex, len(scores))
+	for i, v := range scores {
+		valueIndexes[i] = ValueIndex{Value: v, Index: i}
+	}
+
+	sort.Slice(valueIndexes, func(i, j int) bool {
+		return valueIndexes[i].Value > valueIndexes[j].Value
+	})
+
+	topIndexes := make([]int, n)
+	for i := 0; i < n && i < len(valueIndexes); i++ {
+		topIndexes[i] = valueIndexes[i].Index + 1
+	}
+
+	return topIndexes
+}
+
+func (c *Composer) getHospitalScore(hospital *Hospital) (*WeightedScore, error) {
 	totalScore := 0.0
 
 	totalScores := make([]float64, constants.TotalPriority)
@@ -100,24 +126,31 @@ func (c *Composer) getHospitalScore(hospital *Hospital) (float64, error) {
 	for i, method := range c.methods {
 		score, err := method(hospital)
 		if err != nil {
-			return 0, err
+			return nil, err
 		}
 		totalScores[i] = score
 	}
 
-	totalScore = c.calculateWeightedScore(totalScores)
+	totalScores = c.calculateWeightedScore(totalScores)
 
-	return totalScore, nil
+	for _, score := range totalScores {
+		totalScore += score
+	}
+
+	return &WeightedScore{
+		TotalScore:  totalScore,
+		ContentRank: c.getContentRank(totalScores),
+	}, nil
 }
 
-func (c *Composer) GetHospitalScore(hospital *Hospital) (float64, error) {
+func (c *Composer) GetHospitalScore(hospital *Hospital) (*WeightedScore, error) {
 	if !c.intersectSymptomsWithHospital(hospital) {
-		return 0, nil
+		return nil, nil
 	}
 
 	score, err := c.getHospitalScore(hospital)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	return score, nil

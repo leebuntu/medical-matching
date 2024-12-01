@@ -97,7 +97,7 @@ func (h *HospitalInjection) InjectHospital() error {
 		return nil
 	}
 
-	file, err := os.Open(constants.DBPath + constants.TestData)
+	file, err := os.Open(constants.TestDataPath + constants.HospitalTestData)
 	if err != nil {
 		return err
 	}
