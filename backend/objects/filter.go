@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -12,7 +13,6 @@ type ScoredHospital struct {
 }
 
 func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospital {
-	// TODO: Filtering with go routine and channel
 	resultChan := make(chan ScoredHospital, len(hospitals))
 
 	var wait sync.WaitGroup
@@ -23,6 +23,7 @@ func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospita
 			defer wait.Done()
 			score, err := composer.GetHospitalScore(hospital)
 			if err != nil {
+				fmt.Println(err)
 				resultChan <- ScoredHospital{HospitalID: hospital.ID, Score: 0, WaitingPerson: hospital.WaitingPerson}
 				return
 			}

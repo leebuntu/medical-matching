@@ -10,17 +10,17 @@ import (
 type Matching struct {
 	userID     int
 	matchingID string
-	context    *dto.MatchingRequest
+	symptoms   []int
 	composer   *Composer
 	state      int
 	result     *dto.PoolingResponseCompleted
 }
 
-func NewMatching(userID int, context *dto.MatchingRequest) *Matching {
+func NewMatching(userID int, symptoms []int) *Matching {
 	return &Matching{
 		userID:     userID,
 		matchingID: uuid.New().String(),
-		context:    context,
+		symptoms:   symptoms,
 		state:      constants.BeforeMatching,
 	}
 }
@@ -37,11 +37,13 @@ func (m *Matching) GetMatchingID() string {
 	return m.matchingID
 }
 
-func (m *Matching) SetComposer(priority []int) {
-	m.composer = NewComposer(priority)
+func (m *Matching) setComposer(priority []int) {
+	m.composer = NewComposer(m.symptoms, priority)
 }
 
-func (m *Matching) StartMatching(hospitals []*Hospital) {
+func (m *Matching) StartMatching(priority []int, hospitals []*Hospital) {
+	m.setComposer(priority)
+
 	m.state = constants.StartMatching
 
 	if m.composer == nil {
@@ -51,13 +53,14 @@ func (m *Matching) StartMatching(hospitals []*Hospital) {
 
 	best := FilteringHospital(hospitals, m.composer)
 
+	m.state = constants.MatchingCompleted
+
 	m.result = &dto.PoolingResponseCompleted{
+		State:         m.state,
 		HospitalID:    best.HospitalID,
 		ContentOption: best.Content,
 		WaitingPerson: best.WaitingPerson,
 	}
-
-	m.state = constants.MatchingCompleted
 }
 
 func (m *Matching) GetCompleteResult() *dto.PoolingResponseCompleted {

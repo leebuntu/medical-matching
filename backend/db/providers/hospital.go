@@ -2,9 +2,7 @@ package providers
 
 import (
 	"database/sql"
-	"errors"
 	"medical-matching/constants"
-	ch "medical-matching/controller/hospital"
 	"medical-matching/db"
 	"medical-matching/objects"
 	"sync"
@@ -57,7 +55,7 @@ func (m *HospitalProvider) getHospitalHandleSymptoms(hospitals *[]*objects.Hospi
 
 		defer rows.Close()
 
-		hospital.Symptoms = make([]*objects.Symptom, 0)
+		hospital.HandleSymptoms = make([]int, 0)
 
 		for rows.Next() {
 			var symptomID int
@@ -66,12 +64,7 @@ func (m *HospitalProvider) getHospitalHandleSymptoms(hospitals *[]*objects.Hospi
 				return err
 			}
 
-			symptom := ch.GetSymptomManager().GetSymptom(symptomID)
-			if symptom == nil {
-				return errors.New("symptoms maybe broken")
-			}
-
-			hospital.Symptoms = append(hospital.Symptoms, symptom)
+			hospital.HandleSymptoms = append(hospital.HandleSymptoms, symptomID)
 		}
 	}
 

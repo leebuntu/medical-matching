@@ -2,17 +2,18 @@ package objects
 
 import (
 	"medical-matching/constants"
+	"slices"
 )
 
 type Composer struct {
+	symptoms []int
 	priority []int
-	methods  []func(hospital *Hospital, weight float64) (float64, error)
-	weights  map[int]float64
-	orders   []int
+	methods  []func(hospital *Hospital) (float64, error)
 }
 
-func NewComposer(priority []int) *Composer {
+func NewComposer(symptoms []int, priority []int) *Composer {
 	instance := &Composer{
+		symptoms: symptoms,
 		priority: priority,
 	}
 	instance.init()
@@ -20,8 +21,7 @@ func NewComposer(priority []int) *Composer {
 }
 
 func (c *Composer) init() {
-	c.methods = []func(hospital *Hospital, weight float64) (float64, error){
-		nil,
+	c.methods = []func(hospital *Hospital) (float64, error){
 		c.calculateWaiting,
 		c.calculateDistance,
 		c.calculateReview,
@@ -29,70 +29,92 @@ func (c *Composer) init() {
 		c.calculateLeastWalk,
 	}
 
-	c.weights = make(map[int]float64)
-	c.weights = constants.Weights
-	for i := len(c.weights) + 1; i <= constants.TotalPriority; i++ {
-		c.weights[i] = 1.0
-	}
+}
 
-	c.orders = make([]int, constants.TotalPriority)
-	copy(c.orders, c.priority)
+func (c *Composer) intersectSymptomsWithHospital(hospital *Hospital) bool {
+	exist := false
 
-	exists := make(map[int]bool)
-	for _, val := range c.priority {
-		exists[val] = true
-	}
-
-	index := len(c.priority)
-	for i := 1; i <= constants.TotalPriority; i++ {
-		if !exists[i] {
-			c.orders[index] = i
-			index++
+	for _, symptom := range c.symptoms {
+		if slices.Contains(hospital.HandleSymptoms, symptom) {
+			exist = true
+			break
 		}
 	}
+
+	return exist
 }
 
-func (c *Composer) calculateWaiting(hospital *Hospital, weight float64) (float64, error) {
-	return float64((100 - (hospital.WaitingPerson * constants.PerWatingPersonScore))) * weight, nil
+func (c *Composer) calculateWaiting(hospital *Hospital) (float64, error) {
+	return float64((100 - (hospital.WaitingPerson * constants.PerWatingPersonScore))), nil
 }
 
-func (c *Composer) calculateDistance(hospital *Hospital, weight float64) (float64, error) {
+func (c *Composer) calculateDistance(hospital *Hospital) (float64, error) {
 	// TODO: using naver api or other api
 	return 0.0, nil
 }
 
-func (c *Composer) calculateReview(hospital *Hospital, weight float64) (float64, error) {
+func (c *Composer) calculateReview(hospital *Hospital) (float64, error) {
 	// TODO: calculate review but using random number maybe?
 	return 0.0, nil
 }
 
-func (c *Composer) calculateHaveParkingLot(hospital *Hospital, weight float64) (float64, error) {
+func (c *Composer) calculateHaveParkingLot(hospital *Hospital) (float64, error) {
 	if hospital.Facility.HaveParkingLot == 1 {
-		return constants.HaveParkingLotScore * weight, nil
+		return constants.HaveParkingLotScore, nil
 	}
 	return 0, nil
 }
 
-func (c *Composer) calculateLeastWalk(hospital *Hospital, weight float64) (float64, error) {
+func (c *Composer) calculateLeastWalk(hospital *Hospital) (float64, error) {
 	// TODO: using naver api or other api
 	return 0.0, nil
+}
+
+func (c *Composer) calculateWeightedScore(scores []float64) float64 {
+	weights := []float64{constants.Weights[1], constants.Weights[2], constants.Weights[3]}
+	totalScore := 0.0
+
+	priorityWeight := make(map[int]float64)
+	for i, priority := range c.priority {
+		if i < len(weights) {
+			priorityWeight[priority] = weights[i]
+		}
+	}
+
+	for i, score := range scores {
+		weight, exists := priorityWeight[i+1]
+		if !exists {
+			weight = constants.Weights[4]
+		}
+		totalScore += score * weight
+	}
+
+	return totalScore
 }
 
 func (c *Composer) getHospitalScore(hospital *Hospital) (float64, error) {
 	totalScore := 0.0
 
-	for i, order := range c.orders {
-		score, err := c.methods[order](hospital, c.weights[i])
+	totalScores := make([]float64, constants.TotalPriority)
+
+	for i, method := range c.methods {
+		score, err := method(hospital)
 		if err != nil {
 			return 0, err
 		}
-		totalScore += score
+		totalScores[i] = score
 	}
+
+	totalScore = c.calculateWeightedScore(totalScores)
 
 	return totalScore, nil
 }
 
 func (c *Composer) GetHospitalScore(hospital *Hospital) (float64, error) {
+	if !c.intersectSymptomsWithHospital(hospital) {
+		return 0, nil
+	}
+
 	score, err := c.getHospitalScore(hospital)
 	if err != nil {
 		return 0, err

@@ -15,6 +15,7 @@ type UserProfileUpdate struct {
 	ProfileURL     string `json:"profile_url"`
 	PhoneNumber    string `json:"phone_number"`
 	HomeAddress    string `json:"home_address"`
+	PostalCode     string `json:"postal_code"`
 	CardID         string `json:"card_id"`
 	PriorityOption []int  `json:"priority_option"`
 }

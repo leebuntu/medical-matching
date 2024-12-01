@@ -11,7 +11,7 @@ type Hospital struct {
 	Longitude          float64
 	Latitude           float64
 	ContactPhoneNumber string
-	Symptoms           []*Symptom
+	HandleSymptoms     []int
 	WaitingPerson      int
 	ReviewStat         ReviewStat
 	Facility           HospitalFacility

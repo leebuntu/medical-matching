@@ -5,6 +5,7 @@ import (
 	"medical-matching/constants/dto"
 	"medical-matching/controller/hospital"
 	"medical-matching/controller/matching"
+	"medical-matching/db/providers"
 	"medical-matching/utils"
 	"net/http"
 
@@ -13,12 +14,6 @@ import (
 
 func CreateMatching() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		longitude, latitude, radius, err := utils.ParseGEOQuery(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
-			return
-		}
-
 		rq := dto.MatchingRequest{}
 		userID, err := utils.CheckBindData(ctx, &rq)
 		if err != nil {
@@ -26,18 +21,26 @@ func CreateMatching() gin.HandlerFunc {
 		}
 
 		mm := matching.GetMatchingManager()
-		m, err := mm.CreateMatching(userID, &rq)
+		m, err := mm.CreateMatching(userID, rq.Symptoms.KnownSymptoms)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": constants.BadRequest})
 			return
 		}
 
-		hospitals, err := hospital.GetHospitalManager().GetHospitals(longitude, latitude, radius)
+		hospitals, err := hospital.GetHospitalManager().GetHospitals(rq.BasisLongitude, rq.BasisLatitude, rq.Radius)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
 		}
-		go m.StartMatching(hospitals)
+
+		up := providers.GetUserProvider()
+		priority, err := up.GetPriorityByID(userID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
+			return
+		}
+
+		go m.StartMatching(priority, hospitals)
 
 		ctx.JSON(http.StatusOK, gin.H{"matching_id": m.GetMatchingID()})
 	}

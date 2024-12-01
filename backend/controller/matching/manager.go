@@ -2,7 +2,6 @@ package matching
 
 import (
 	"errors"
-	"medical-matching/constants/dto"
 	"medical-matching/objects"
 	"sync"
 )
@@ -32,10 +31,10 @@ func (m *MatchingManager) GetMatching(matchingID string) (*objects.Matching, err
 	return matching, nil
 }
 
-func (m *MatchingManager) CreateMatching(userID int, context *dto.MatchingRequest) (*objects.Matching, error) {
+func (m *MatchingManager) CreateMatching(userID int, symptoms []int) (*objects.Matching, error) {
 	// TODO: check limit
 
-	matching := objects.NewMatching(userID, context)
+	matching := objects.NewMatching(userID, symptoms)
 
 	m.matchings[matching.GetMatchingID()] = matching
 

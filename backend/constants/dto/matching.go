@@ -1,15 +1,15 @@
 package dto
 
 type Symptoms struct {
-	KnownSymptoms      []int  `json:"known_symptoms"`
+	KnownSymptoms      []int  `json:"known_symptoms" binding:"required"`
 	AdditionalSymptoms string `json:"additional_symptoms"`
 }
 
 type MatchingRequest struct {
-	BasisLongitude float64  `json:"basis_longitude"`
-	BasisLatitude  float64  `json:"basis_latitude"`
-	Radius         float64  `json:"radius"`
-	Symptoms       Symptoms `json:"symptoms"`
+	BasisLongitude float64  `json:"basis_longitude" binding:"required"`
+	BasisLatitude  float64  `json:"basis_latitude" binding:"required"`
+	Radius         float64  `json:"radius" binding:"required"`
+	Symptoms       Symptoms `json:"symptoms" binding:"required"`
 }
 
 type PoolingResponseNotCompleted struct {
