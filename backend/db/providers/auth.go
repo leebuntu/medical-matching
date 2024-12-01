@@ -45,6 +45,15 @@ func (p *AuthProvider) Login(r *dto.LoginRequest) (int, error) {
 	return userID, nil
 }
 
+func (p *AuthProvider) IsExistUser(userID int) (bool, error) {
+	var exists int
+	err := p.db.QueryRow("SELECT 1 FROM user WHERE id = ?", userID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (p *AuthProvider) isDuplicateUser(tx *sql.Tx, email string) (bool, error) {
 	var exists int
 	err := tx.QueryRow("SELECT 1 FROM user WHERE email = ?", email).Scan(&exists)

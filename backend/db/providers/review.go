@@ -26,7 +26,7 @@ func GetReviewProvider() *ReviewProvider {
 	return reviewInstance
 }
 
-func (p *ReviewProvider) GetReview(hospitalID string, page int) ([]*dto.ReviewStat, error) {
+func (p *ReviewProvider) GetReview(hospitalID string, page int) ([]*dto.Review, error) {
 	rows, err := p.db.Query("SELECT id, user_id, timestamp, score, context FROM review WHERE hospital_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?", hospitalID, constants.ReviewPerPage, (page-1)*constants.ReviewPerPage)
 	if err != nil {
 		return nil, err
@@ -34,10 +34,10 @@ func (p *ReviewProvider) GetReview(hospitalID string, page int) ([]*dto.ReviewSt
 
 	defer rows.Close()
 
-	reviews := make([]*dto.ReviewStat, 0)
+	reviews := make([]*dto.Review, 0)
 
 	for rows.Next() {
-		review := &dto.ReviewStat{}
+		review := &dto.Review{}
 		var reviewID int
 		var userID int
 		err := rows.Scan(&reviewID, &userID, &review.VisitedDate, &review.Rating, &review.ReviewContext)

@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"medical-matching/constants"
+	"medical-matching/db/providers"
 
 	"net/http"
 	"strings"
@@ -22,6 +23,14 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		claims, err := ValidateJWT(tokenString)
 		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.Unauthorized})
+			c.Abort()
+			return
+		}
+
+		ap := providers.GetAuthProvider()
+		isExist, err := ap.IsExistUser(claims.UserID)
+		if err != nil || !isExist {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": constants.Unauthorized})
 			c.Abort()
 			return

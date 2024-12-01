@@ -27,15 +27,15 @@ func SetupRoutes(router *gin.Engine) {
 		paymentGroup := v1.Group("/payments")
 		{
 			paymentGroup.Use(middlewares.AuthMiddleware())
-			paymentGroup.POST("/", AddPaymentMethod())
-			paymentGroup.GET("/", GetPaymentMethodList())
+			paymentGroup.POST("", AddPaymentMethod())
+			paymentGroup.GET("", GetPaymentMethodList())
 			paymentGroup.DELETE("/:cardID", DeletePaymentMethod())
 		}
 
 		hospitalGroup := v1.Group("/hospitals")
 		{
 			hospitalGroup.Use(middlewares.AuthMiddleware())
-			hospitalGroup.GET("/", GetHospitalList())
+			hospitalGroup.GET("", GetHospitalList())
 			hospitalGroup.GET("/:hospitalID/detail", GetHospitalDetail())
 			hospitalGroup.GET("/:hospitalID/brief", GetBriefHospital())
 			hospitalGroup.GET("/:hospitalID/reviews", GetHospitalReview())
@@ -44,8 +44,8 @@ func SetupRoutes(router *gin.Engine) {
 		matchingGroup := v1.Group("/matchings")
 		{
 			matchingGroup.Use(middlewares.AuthMiddleware())
-			matchingGroup.POST("/", CreateMatching())
-			matchingGroup.GET("/", GetAllMatching())
+			matchingGroup.POST("", CreateMatching())
+			matchingGroup.GET("", GetAllMatching())
 			matchingGroup.GET("/:matchingID", GetMatching())
 			matchingGroup.DELETE("/:matchingID", EndMatching())
 		}

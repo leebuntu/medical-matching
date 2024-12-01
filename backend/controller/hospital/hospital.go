@@ -2,6 +2,7 @@ package hospital
 
 import (
 	"errors"
+	"medical-matching/maps"
 	"medical-matching/objects"
 	"sync"
 )
@@ -44,11 +45,12 @@ func (m *HospitalManager) GetHospitals(longitude, latitude float64, radius float
 		return nil, errors.New("no hospitals")
 	}
 
-	hospitals := make([]*objects.Hospital, 0, len(m.hospitals))
+	hospitals := make([]*objects.Hospital, 0)
 	for _, hospital := range m.hospitals {
-		hospitals = append(hospitals, hospital)
+		if maps.IsWithinRadius(hospital.Longitude, hospital.Latitude, longitude, latitude, radius) {
+			hospitals = append(hospitals, hospital)
+		}
 	}
-	//TODO
 
 	return hospitals, nil
 }

@@ -26,7 +26,13 @@ func GetHospitalList() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"hospitals": hospitals})
+
+		dtoHospitals := make([]dto.HospitalDetail, 0)
+		for _, hospital := range hospitals {
+			dtoHospitals = append(dtoHospitals, hospital.GetDTOHospitalDetail())
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"hospitals": dtoHospitals})
 	}
 }
 
@@ -45,14 +51,7 @@ func GetHospitalDetail() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, dto.HospitalDetail{
-			Name:               hospital.Name,
-			OwnerName:          hospital.OwnerName,
-			Address:            hospital.Address,
-			ContactPhoneNumber: hospital.ContactPhoneNumber,
-			WaitingPerson:      hospital.WaitingPerson,
-			//TODOOpenTime:           hospital.OpenTime,
-		})
+		ctx.JSON(http.StatusOK, hospital.GetDTOHospitalDetail())
 	}
 }
 
@@ -71,12 +70,7 @@ func GetBriefHospital() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, dto.HospitalBrief{
-			Name:          hospital.Name,
-			OwnerName:     hospital.OwnerName,
-			Address:       hospital.Address,
-			WaitingPerson: hospital.WaitingPerson,
-		})
+		ctx.JSON(http.StatusOK, hospital.GetDTOHospitalBrief())
 	}
 }
 

@@ -4,6 +4,13 @@ import (
 	"sync"
 )
 
+type ScoredHospital struct {
+	HospitalID    int
+	Score         float64
+	Content       []string
+	WaitingPerson int
+}
+
 func FilteringHospital(hospitals []*Hospital, composer *Composer) *ScoredHospital {
 	// TODO: Filtering with go routine and channel
 	resultChan := make(chan ScoredHospital, len(hospitals))
