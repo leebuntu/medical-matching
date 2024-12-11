@@ -23,3 +23,8 @@ func IsWithinRadius(srcLat, srcLon, dstLat, dstLon, radius float64) bool {
 	distance := haversine(srcLat, srcLon, dstLat, dstLon)
 	return distance <= radius
 }
+
+func GetWalkingTime(startLongitude, startLatitude, endLongitude, endLatitude float64) float64 {
+	distance := haversine(startLatitude, startLongitude, endLatitude, endLongitude)
+	return distance / 1.39
+}

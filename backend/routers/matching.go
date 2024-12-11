@@ -9,6 +9,8 @@ import (
 	"medical-matching/db/providers"
 	"medical-matching/utils"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,9 +44,17 @@ func CreateMatching() gin.HandlerFunc {
 		}
 
 		go func() {
-			m.StartMatching(priority, hospitals)
+			m.StartMatching(rq.BasisLongitude, rq.BasisLatitude, priority, hospitals)
 			rp := providers.GetRecordProvider()
-			err = rp.AddRecord(userID, m.GetCompleteResult().HospitalID, "#test")
+
+			symptoms := rq.Symptoms.KnownSymptoms
+			var symptomLists string
+			for _, symptom := range symptoms {
+				symptomLists += strconv.Itoa(symptom) + ", "
+			}
+			symptomLists = strings.TrimSuffix(symptomLists, ", ")
+
+			err = rp.AddRecord(userID, m.GetCompleteResult().HospitalID, symptomLists)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -84,7 +94,7 @@ func GetAllMatching() gin.HandlerFunc {
 		mm := matching.GetMatchingManager()
 		matchings := mm.GetAllMatching(userID)
 
-		ctx.JSON(http.StatusOK, gin.H{"matchings": matchings})
+		ctx.JSON(http.StatusOK, dto.MatchingListResponse{Count: len(matchings), MatchingIDs: matchings})
 	}
 }
 

@@ -39,7 +39,7 @@ func (h *Hospital) CalculateReviewScore() float64 {
 	return 0
 }
 
-func (h *Hospital) GetDTOHospitalDetail() dto.HospitalDetail {
+func (h *Hospital) GetDTOHospitalDetail() *dto.HospitalDetail {
 	openTimes := make([]*dto.OpenTime, 0)
 	for _, openTime := range h.OpenTime {
 		openTimes = append(openTimes, &dto.OpenTime{
@@ -49,7 +49,7 @@ func (h *Hospital) GetDTOHospitalDetail() dto.HospitalDetail {
 		})
 	}
 
-	return dto.HospitalDetail{
+	return &dto.HospitalDetail{
 		Name:               h.Name,
 		OwnerName:          h.OwnerName,
 		Address:            h.Address,

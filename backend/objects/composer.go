@@ -1,21 +1,27 @@
 package objects
 
 import (
+	"fmt"
 	"medical-matching/constants"
+	"medical-matching/maps"
 	"slices"
 	"sort"
 )
 
 type Composer struct {
-	symptoms []int
-	priority []int
-	methods  []func(hospital *Hospital) (float64, error)
+	symptoms       []int
+	basisLongitude float64
+	basisLatitude  float64
+	priority       []int
+	methods        []func(hospital *Hospital) (float64, error)
 }
 
-func NewComposer(symptoms []int, priority []int) *Composer {
+func NewComposer(symptoms []int, basisLongitude, basisLatitude float64, priority []int) *Composer {
 	instance := &Composer{
-		symptoms: symptoms,
-		priority: priority,
+		symptoms:       symptoms,
+		basisLongitude: basisLongitude,
+		basisLatitude:  basisLatitude,
+		priority:       priority,
 	}
 	instance.init()
 	return instance
@@ -50,12 +56,17 @@ func (c *Composer) calculateWaiting(hospital *Hospital) (float64, error) {
 }
 
 func (c *Composer) calculateDistance(hospital *Hospital) (float64, error) {
-	// TODO: using naver api or other api
-	return 0.0, nil
+	time, err := maps.GetDrivingTimeAsMinutes(c.basisLongitude, c.basisLatitude, hospital.Longitude, hospital.Latitude)
+	if err != nil {
+		return 0.0, err
+	}
+
+	score := 100 - (float64(time) * constants.PerDrivingTimeScore)
+	return score, nil
 }
 
 func (c *Composer) calculateReview(hospital *Hospital) (float64, error) {
-	// TODO: calculate review but using random number maybe?
+
 	return 0.0, nil
 }
 
@@ -67,8 +78,11 @@ func (c *Composer) calculateHaveParkingLot(hospital *Hospital) (float64, error) 
 }
 
 func (c *Composer) calculateLeastWalk(hospital *Hospital) (float64, error) {
-	// TODO: using naver api or other api
-	return 0.0, nil
+	walkingTime := maps.GetWalkingTime(c.basisLongitude, c.basisLatitude, hospital.Longitude, hospital.Latitude)
+	score := 100 - (walkingTime * constants.PerWalkMinuteScore)
+	fmt.Println(hospital.Name)
+	fmt.Println("walkingTime", walkingTime)
+	return score, nil
 }
 
 func (c *Composer) calculateWeightedScore(scores []float64) []float64 {

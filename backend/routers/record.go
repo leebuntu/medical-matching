@@ -25,7 +25,7 @@ func GetRecordList() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
 			return
 		}
-		c.JSON(http.StatusOK, dto.RecordListResponse{Records: records})
+		c.JSON(http.StatusOK, dto.RecordListResponse{Count: len(records), CurrentPage: page, Records: records})
 	}
 }
 

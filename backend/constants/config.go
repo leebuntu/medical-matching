@@ -54,6 +54,7 @@ const (
 	PerWatingPersonScore = -5
 	HaveParkingLotScore  = 30
 	PerWalkMinuteScore   = -5
+	PerDrivingTimeScore  = -1.66
 )
 
 const (

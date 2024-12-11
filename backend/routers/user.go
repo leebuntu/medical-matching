@@ -36,8 +36,8 @@ func UpdateUserProfile() gin.HandlerFunc {
 			return
 		}
 
-		userService := providers.GetUserProvider()
-		err = userService.UpdateUserProfile(userID, &profile)
+		userProvider := providers.GetUserProvider()
+		err = userProvider.UpdateUserProfile(userID, &profile)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": constants.InternalServerError})
@@ -89,7 +89,7 @@ func GetPaymentMethodList() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, paymentMethods)
+		c.JSON(http.StatusOK, gin.H{"payment_methods": paymentMethods})
 	}
 }
 

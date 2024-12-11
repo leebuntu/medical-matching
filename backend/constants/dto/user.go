@@ -6,7 +6,7 @@ type UserProfile struct {
 	PhoneNumber    string `json:"phone_number"`
 	HomeAddress    string `json:"home_address"`
 	Email          string `json:"email"`
-	CardID         string `json:"card_id"`
+	CardID         int    `json:"card_id"`
 	Candy          int    `json:"candy"`
 	PriorityOption []int  `json:"priority_option"`
 }
@@ -28,7 +28,7 @@ type PaymentMethod struct {
 }
 
 type RetrievePaymentMethod struct {
-	CardID     string `json:"card_id"`
+	CardID     int    `json:"card_id"`
 	CardNumber string `json:"card_number"`
 	ExpDate    string `json:"exp_date"`
 }

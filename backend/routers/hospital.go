@@ -27,12 +27,12 @@ func GetHospitalList() gin.HandlerFunc {
 			return
 		}
 
-		dtoHospitals := make([]dto.HospitalDetail, 0)
+		dtoHospitals := make([]*dto.HospitalDetail, 0)
 		for _, hospital := range hospitals {
 			dtoHospitals = append(dtoHospitals, hospital.GetDTOHospitalDetail())
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"hospitals": dtoHospitals})
+		ctx.JSON(http.StatusOK, dto.HospitalListResponse{Count: len(hospitals), Hospitals: dtoHospitals})
 	}
 }
 

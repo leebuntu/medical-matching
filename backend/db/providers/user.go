@@ -7,6 +7,7 @@ import (
 	"medical-matching/constants/dto"
 	"medical-matching/db"
 	"medical-matching/utils"
+	"strconv"
 	"sync"
 
 	"github.com/google/uuid"
@@ -40,9 +41,9 @@ func (p *UserProvider) getEmailByID(id int, profile *dto.UserProfile) error {
 
 func (p *UserProvider) getBasicInfoByID(id int, profile *dto.UserProfile) error {
 	var profile_url sql.NullString
-	var payment_id sql.NullString
+	var card_id sql.NullString
 
-	err := p.db.QueryRow("SELECT name, profile_image_url, phone_number, home_address, candy, card_id FROM user_profile WHERE id = ?", id).Scan(&profile.Username, &profile_url, &profile.PhoneNumber, &profile.HomeAddress, &profile.Candy, &payment_id)
+	err := p.db.QueryRow("SELECT name, profile_image_url, phone_number, home_address, candy, card_id FROM user_profile WHERE id = ?", id).Scan(&profile.Username, &profile_url, &profile.PhoneNumber, &profile.HomeAddress, &profile.Candy, &card_id)
 	if err != nil {
 		return err
 	}
@@ -53,10 +54,13 @@ func (p *UserProvider) getBasicInfoByID(id int, profile *dto.UserProfile) error 
 		profile.ProfileURL = ""
 	}
 
-	if payment_id.Valid {
-		profile.CardID = payment_id.String
+	if card_id.Valid {
+		profile.CardID, err = strconv.Atoi(card_id.String)
+		if err != nil {
+			return err
+		}
 	} else {
-		profile.CardID = ""
+		profile.CardID = 0
 	}
 
 	return nil

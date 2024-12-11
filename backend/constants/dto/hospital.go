@@ -18,6 +18,11 @@ type HospitalBrief struct {
 	WaitingPerson int    `json:"waiting_person"`
 }
 
+type HospitalListResponse struct {
+	Count     int               `json:"count"`
+	Hospitals []*HospitalDetail `json:"hospitals"`
+}
+
 type ReviewResponse struct {
 	Count       int       `json:"count"`
 	CurrentPage int       `json:"current_page"`

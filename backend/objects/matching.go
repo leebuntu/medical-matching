@@ -37,12 +37,12 @@ func (m *Matching) GetMatchingID() string {
 	return m.matchingID
 }
 
-func (m *Matching) setComposer(priority []int) {
-	m.composer = NewComposer(m.symptoms, priority)
+func (m *Matching) setComposer(basisLongitude, basisLatitude float64, priority []int) {
+	m.composer = NewComposer(m.symptoms, basisLongitude, basisLatitude, priority)
 }
 
-func (m *Matching) StartMatching(priority []int, hospitals []*Hospital) {
-	m.setComposer(priority)
+func (m *Matching) StartMatching(basisLongitude, basisLatitude float64, priority []int, hospitals []*Hospital) {
+	m.setComposer(basisLongitude, basisLatitude, priority)
 
 	m.state = constants.StartMatching
 

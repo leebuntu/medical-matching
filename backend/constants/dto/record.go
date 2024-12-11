@@ -7,7 +7,9 @@ type UpdateRecordNotesRequest struct {
 }
 
 type RecordListResponse struct {
-	Records []*MedicalRecord `json:"records"`
+	Count       int              `json:"count"`
+	CurrentPage int              `json:"current_page"`
+	Records     []*MedicalRecord `json:"records"`
 }
 
 type MedicalRecord struct {

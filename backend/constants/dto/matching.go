@@ -12,6 +12,11 @@ type MatchingRequest struct {
 	Symptoms       Symptoms `json:"symptoms" binding:"required"`
 }
 
+type MatchingListResponse struct {
+	Count       int      `json:"count"`
+	MatchingIDs []string `json:"matching_ids"`
+}
+
 type PoolingResponseNotCompleted struct {
 	State int `json:"state"`
 }
