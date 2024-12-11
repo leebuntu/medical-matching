@@ -1,6 +1,9 @@
 package objects
 
-import "medical-matching/constants/dto"
+import (
+	"math"
+	"medical-matching/constants/dto"
+)
 
 type Hospital struct {
 	ID                 int
@@ -35,10 +38,6 @@ type OpenTime struct {
 	CloseTime string
 }
 
-func (h *Hospital) CalculateReviewScore() float64 {
-	return 0
-}
-
 func (h *Hospital) GetDTOHospitalDetail() *dto.HospitalDetail {
 	openTimes := make([]*dto.OpenTime, 0)
 	for _, openTime := range h.OpenTime {
@@ -56,7 +55,7 @@ func (h *Hospital) GetDTOHospitalDetail() *dto.HospitalDetail {
 		ContactPhoneNumber: h.ContactPhoneNumber,
 		WaitingPerson:      h.WaitingPerson,
 		ReviewStat: &dto.ReviewStat{
-			TotalAverageRating: float64(h.ReviewStat.TotalRating) / float64(h.ReviewStat.ReviewCount),
+			TotalAverageRating: math.Round((float64(h.ReviewStat.TotalRating)/float64(h.ReviewStat.ReviewCount))*10) / 10,
 			Count:              h.ReviewStat.ReviewCount,
 		},
 		OpenTime: openTimes,

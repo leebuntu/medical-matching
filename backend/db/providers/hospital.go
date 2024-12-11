@@ -26,6 +26,9 @@ func GetHospitalProvider() *HospitalProvider {
 	return hospitalInstance
 }
 
+var testWaitingPerson []int = []int{12, 10, 3, 7, 4, 18, 32, 11, 9, 15, 60, 65, 70, 75, 80, 85, 90, 95, 100}
+var currentIndex int = 0
+
 func (m *HospitalProvider) getHospitalBasicInfo(hospitals *[]*objects.Hospital) error {
 	rows, err := m.db.Query("SELECT id, name, owner_name, address, postal_code, longitude, latitude, contact_phone_number FROM hospital")
 	if err != nil {
@@ -37,6 +40,10 @@ func (m *HospitalProvider) getHospitalBasicInfo(hospitals *[]*objects.Hospital) 
 	for rows.Next() {
 		hospital := &objects.Hospital{}
 		err := rows.Scan(&hospital.ID, &hospital.Name, &hospital.OwnerName, &hospital.Address, &hospital.PostalCode, &hospital.Longitude, &hospital.Latitude, &hospital.ContactPhoneNumber)
+
+		hospital.WaitingPerson = testWaitingPerson[currentIndex]
+		currentIndex++
+
 		if err != nil {
 			return err
 		}

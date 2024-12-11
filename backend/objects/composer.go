@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"fmt"
+	"math"
 	"medical-matching/constants"
 	"medical-matching/maps"
 	"slices"
@@ -52,7 +52,11 @@ func (c *Composer) intersectSymptomsWithHospital(hospital *Hospital) bool {
 }
 
 func (c *Composer) calculateWaiting(hospital *Hospital) (float64, error) {
-	return float64((100 - (hospital.WaitingPerson * constants.PerWatingPersonScore))), nil
+	score := float64((100 + (hospital.WaitingPerson * constants.PerWatingPersonScore)))
+	if score < 0 {
+		return 0, nil
+	}
+	return score, nil
 }
 
 func (c *Composer) calculateDistance(hospital *Hospital) (float64, error) {
@@ -61,13 +65,29 @@ func (c *Composer) calculateDistance(hospital *Hospital) (float64, error) {
 		return 0.0, err
 	}
 
-	score := 100 - (float64(time) * constants.PerDrivingTimeScore)
+	score := 100 + (float64(time) * constants.PerDrivingTimeScore)
+	if score < 0 {
+		return 0, nil
+	}
 	return score, nil
 }
 
 func (c *Composer) calculateReview(hospital *Hospital) (float64, error) {
 
-	return 0.0, nil
+	w1 := 4.0
+	w2 := 3.0
+	w3 := 2.0
+	w4 := 1.0
+
+	averageRating := w1 * hospital.ReviewStat.AverageRating
+	ratingStability := w2 * (1.0 / (1.0 + hospital.ReviewStat.RatingStability))
+	reviewCount := w3 * math.Log10(float64(hospital.ReviewStat.ReviewCount))
+	totalRating := 0.0
+	if hospital.ReviewStat.ReviewCount > 0 {
+		totalRating = w4 * (float64(hospital.ReviewStat.TotalRating) / float64(hospital.ReviewStat.ReviewCount))
+	}
+
+	return averageRating + ratingStability + reviewCount + totalRating, nil
 }
 
 func (c *Composer) calculateHaveParkingLot(hospital *Hospital) (float64, error) {
@@ -78,10 +98,14 @@ func (c *Composer) calculateHaveParkingLot(hospital *Hospital) (float64, error) 
 }
 
 func (c *Composer) calculateLeastWalk(hospital *Hospital) (float64, error) {
-	walkingTime := maps.GetWalkingTime(c.basisLongitude, c.basisLatitude, hospital.Longitude, hospital.Latitude)
-	score := 100 - (walkingTime * constants.PerWalkMinuteScore)
-	fmt.Println(hospital.Name)
-	fmt.Println("walkingTime", walkingTime)
+	walkingTime, err := maps.GetPedestrianTimeAsMinutes(c.basisLongitude, c.basisLatitude, hospital.Longitude, hospital.Latitude, "t", "f")
+	if err != nil {
+		return 0, err
+	}
+	score := 100 + (walkingTime * constants.PerWalkMinuteScore)
+	if score < 0 {
+		return 0, nil
+	}
 	return score, nil
 }
 
@@ -126,7 +150,9 @@ func (c *Composer) getContentRank(scores []float64) []int {
 
 	topIndexes := make([]int, n)
 	for i := 0; i < n && i < len(valueIndexes); i++ {
-		topIndexes[i] = valueIndexes[i].Index + 1
+		if valueIndexes[i].Value > 0 {
+			topIndexes[i] = valueIndexes[i].Index + 1
+		}
 	}
 
 	return topIndexes

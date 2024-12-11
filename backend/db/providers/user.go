@@ -8,6 +8,7 @@ import (
 	"medical-matching/db"
 	"medical-matching/utils"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -126,22 +127,47 @@ func (p *UserProvider) GetUserProfile(id int) (*dto.UserProfile, error) {
 }
 
 func (p *UserProvider) UpdateUserProfile(id int, up *dto.UserProfileUpdate) error {
-	_, err := p.db.Exec("DELETE FROM priority WHERE user_id = ?", id)
-	if err != nil {
-		return err
-	}
-
-	for i, priority := range up.PriorityOption {
-		_, err := p.db.Exec("INSERT INTO priority (user_id, priority_id, rank) VALUES (?, ?, ?)", id, priority, i+1)
+	if len(up.PriorityOption) > 0 {
+		_, err := p.db.Exec("DELETE FROM priority WHERE user_id = ?", id)
 		if err != nil {
 			return err
 		}
+
+		for i, priority := range up.PriorityOption {
+			_, err := p.db.Exec("INSERT INTO priority (user_id, priority_id, rank) VALUES (?, ?, ?)", id, priority, i+1)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
-	_, err = p.db.Exec("UPDATE user_profile SET profile_image_url = ?, phone_number = ?, home_address = ?, card_id = ? WHERE id = ?", up.ProfileURL, up.PhoneNumber, up.HomeAddress, up.CardID, id)
+	var updates []string
+	var params []interface{}
 
-	if err != nil {
-		return err
+	if up.ProfileURL != "" {
+		updates = append(updates, "profile_image_url = ?")
+		params = append(params, up.ProfileURL)
+	}
+	if up.PhoneNumber != "" {
+		updates = append(updates, "phone_number = ?")
+		params = append(params, up.PhoneNumber)
+	}
+	if up.HomeAddress != "" {
+		updates = append(updates, "home_address = ?")
+		params = append(params, up.HomeAddress)
+	}
+	if up.CardID != "" {
+		updates = append(updates, "card_id = ?")
+		params = append(params, up.CardID)
+	}
+
+	if len(updates) > 0 {
+		params = append(params, id)
+		query := fmt.Sprintf("UPDATE user_profile SET %s WHERE id = ?", strings.Join(updates, ", "))
+		_, err := p.db.Exec(query, params...)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
